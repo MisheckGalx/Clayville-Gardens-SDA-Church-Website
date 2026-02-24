@@ -8,7 +8,7 @@ Official website for Clayville Gardens Seventh-day Adventist Church in Olifantsf
 
 ## 🌐 Live Website
 
-**URL:** [clayvillegardens.pythonanywhere.com](http://clayvillegardens.pythonanywhere.com)
+**URL:** [clayvillegardens.pythonanywhere.com](https://clayvillegardenssdachurch.onrender.com)
 
 ---
 
