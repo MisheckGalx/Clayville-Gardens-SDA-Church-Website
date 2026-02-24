@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Clayville Gardens SDA Church{% endblock %}
+
+{% block content %}
+<!-- Hero Slider -->
+<div class="hero-slider">
+    <div class="slide active" style="background-image: url('/static/hero1.jpg');">
+        <div class="slide-overlay">
+            <h1>Clayville Gardens Seventh Day Adventist Church</h1>
+            <p>Proclaiming the Gospel. Serving the Community. Preparing for Christ's Return.</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('services') }}" class="btn btn-primary">Plan Your Visit</a>
+                <a href="{{ url_for('sermons') }}" class="btn btn-secondary">Watch Sermons</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="slide" style="background-image: url('/static/hero2.jpg');">
+        <div class="slide-overlay">
+            <h1>Join Our Community</h1>
+            <p>A welcoming church family committed to worship, fellowship, and service.</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('about') }}" class="btn btn-primary">Learn More</a>
+                <a href="{{ url_for('events') }}" class="btn btn-secondary">View Events</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="slide" style="background-image: url('/static/hero3.jpg');">
+        <div class="slide-overlay">
+            <h1>Growing in Faith Together</h1>
+            <p>Bible study, prayer meetings, and discipleship programs for all ages.</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('services') }}" class="btn btn-primary">Service Times</a>
+                <a href="{{ url_for('contact') }}" class="btn btn-secondary">Get Connected</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Upcoming Events Section -->
+<div class="container">
+    <div class="section-heading">
+        <h2>Upcoming Events</h2>
+        <p>Join us for worship, fellowship, and community service</p>
+    </div>
+    
+    <div class="cards-grid">
+        {% for event in events %}
+        <div class="card">
+            {% if event['image_url'] %}
+            <img src="{{ event['image_url'] }}" alt="{{ event['title'] }}" class="card-image">
+            {% endif %}
+            <div class="card-content">
+                <h3 class="card-title">{{ event['title'] }}</h3>
+                <p class="card-meta">{{ event['date'] }}</p>
+                <p class="card-description">{{ event['description'] }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div style="text-align: center; margin-top: 2rem;">
+        <a href="{{ url_for('events') }}" class="btn btn-primary">View All Events</a>
+    </div>
+</div>
+
+<!-- Recent Sermons Section -->
+<div style="background: var(--gray-light); padding: 4rem 0; margin-top: 4rem;">
+    <div class="container">
+        <div class="section-heading">
+            <h2>Recent Sermons</h2>
+            <p>Messages of hope, faith, and inspiration</p>
+        </div>
+        
+        <div class="cards-grid">
+            {% for sermon in sermons %}
+            <div class="card">
+                <div class="card-content">
+                    <h3 class="card-title">{{ sermon['title'] }}</h3>
+                    <p class="card-meta">{{ sermon['preacher'] }} • {{ sermon['date'] }}</p>
+                    <p class="card-description">{{ sermon['description'] }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        
+        <div style="text-align: center; margin-top: 2rem;">
+            <a href="{{ url_for('sermons') }}" class="btn btn-primary">View All Sermons</a>
+        </div>
+    </div>
+</div>
+
+<!-- Mission Statement -->
+<div class="container">
+    <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+        <h2 style="color: var(--maroon); margin-bottom: 1.5rem; font-size: 2rem;">Our Mission</h2>
+        <p style="font-size: 1.125rem; line-height: 1.8; color: var(--gray);">
+            Clayville Gardens SDA Church exists to glorify God by proclaiming the everlasting gospel, 
+            nurturing believers in their faith journey, and serving our community with Christ's love. 
+            We are committed to preparing hearts for the soon return of Jesus Christ.
+        </p>
+    </div>
+</div>
+{% endblock %}

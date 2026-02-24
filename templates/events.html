@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Events - Clayville SDA Church{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="section-heading">
+        <h2>Upcoming Events</h2>
+        <p>Join us for worship, fellowship, and community outreach</p>
+    </div>
+    
+    {% if events %}
+    <div class="cards-grid">
+        {% for event in events %}
+        <div class="card">
+            {% if event['image_url'] %}
+            <img src="{{ event['image_url'] }}" alt="{{ event['title'] }}" class="card-image">
+            {% endif %}
+            <div class="card-content">
+                <h3 class="card-title">{{ event['title'] }}</h3>
+                <p class="card-meta">{{ event['date'] }}</p>
+                <p class="card-description">{{ event['description'] }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 4rem 2rem; background: var(--gray-light); border-radius: 12px;">
+        <h3 style="color: var(--gray); margin-bottom: 1rem;">No Upcoming Events</h3>
+        <p style="color: var(--gray);">Check back soon for new events and programs!</p>
+    </div>
+    {% endif %}
+    
+    <div style="background: var(--gray-light); padding: 3rem; border-radius: 12px; margin-top: 4rem; text-align: center;">
+        <h3 style="color: var(--maroon); margin-bottom: 1rem; font-size: 1.75rem;">Stay Updated</h3>
+        <p style="color: var(--gray); margin-bottom: 1.5rem;">
+            Don't miss out on upcoming events and programs. Contact us to join our mailing list!
+        </p>
+        <a href="{{ url_for('contact') }}" class="btn btn-primary">Contact Us</a>
+    </div>
+</div>
+{% endblock %}

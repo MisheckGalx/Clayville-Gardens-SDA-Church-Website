@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Clayville Gardens SDA Church - Proclaiming the Gospel, Serving the Community, Preparing for Christ's Return">
+    <meta name="keywords" content="Clayville Gardens, SDA, Church, Seventh-day Adventist, Worship, Community, Olifantsfontein">
+    <title>{% block title %}Clayville Gardens SDA Church{% endblock %}</title>
+    
+    <!-- Favicon - using your logo -->
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='logo.png') }}">
+    
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">
+    <img src="/static/logo.png" alt="Clayville SDA" style="height: 50px; border-radius: 8px;">
+    <span class="logo-text">Clayville Gardens SDA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('services') }}">Services</a></li>
+                <li><a href="{{ url_for('events') }}">Events</a></li>
+                <li><a href="{{ url_for('sermons') }}">Sermons</a></li>
+                <li><a href="{{ url_for('gallery') }}">Gallery</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div style="max-width: 1200px; margin: 1rem auto; padding: 0 2rem;">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Main Content -->
+    {% block content %}{% endblock %}
+    
+    <!-- Footer -->
+    <footer>
+        <p><strong>Clayville Gardens SDA Church</strong></p>
+        <p>2 Reginald Street, Olifantsfontein, 1666</p>
+        <p>Phone: +27 81 722 4005 | Email: clayvillesda@gmail.com</p>
+        <p style="margin-top: 1.5rem;">
+            &copy; {{ current_year or 2026 }} Clayville Gardens SDA Church | All rights reserved.
+        </p>
+        <p style="margin-top: 1rem;">
+            <a href="{{ url_for('admin_login') }}">Admin Login</a>
+        </p>
+    </footer>
+    
+    <!-- JavaScript -->
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

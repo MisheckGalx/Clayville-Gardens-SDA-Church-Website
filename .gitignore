@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+venv/
+
+# Database
+*.db
+
+# Environment variables
+.env
+
+# Virtual Environment
+venv/
+.env/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# Build folders
+build/
+dist/
+
+# OS files
+.DS_Store

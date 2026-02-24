@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Sermons - Clayville SDA Church{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="section-heading">
+        <h2>Sermons & Messages</h2>
+        <p>Watch and listen to inspiring messages from our pastoral team</p>
+    </div>
+    
+    {% if sermons %}
+    <div class="cards-grid">
+        {% for sermon in sermons %}
+        <div class="card">
+            {% if sermon['youtube_url'] %}
+            <iframe 
+                width="100%" 
+                height="220" 
+                src="{{ sermon['youtube_url'] }}" 
+                frameborder="0" 
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                allowfullscreen
+                style="border-radius: 12px 12px 0 0;">
+            </iframe>
+            {% endif %}
+            <div class="card-content">
+                <h3 class="card-title">{{ sermon['title'] }}</h3>
+                <p class="card-meta">{{ sermon['preacher'] }} • {{ sermon['date'] }}</p>
+                <p class="card-description">{{ sermon['description'] }}</p>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align: center; padding: 4rem 2rem; background: var(--gray-light); border-radius: 12px;">
+        <h3 style="color: var(--gray); margin-bottom: 1rem;">No Sermons Available</h3>
+        <p style="color: var(--gray);">Check back soon for new messages!</p>
+    </div>
+    {% endif %}
+    
+    <div style="background: var(--maroon); color: white; padding: 3rem; border-radius: 12px; margin-top: 4rem; text-align: center;">
+        <h3 style="font-size: 2rem; margin-bottom: 1rem;">Can't Make It to Church?</h3>
+        <p style="font-size: 1.125rem; margin-bottom: 1.5rem;">
+            Watch our live stream every Sabbath morning at 11:00 AM
+        </p>
+        <a href="#" class="btn btn-secondary">Watch Live Stream</a>
+    </div>
+</div>
+{% endblock %}

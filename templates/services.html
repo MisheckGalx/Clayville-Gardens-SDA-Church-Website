@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+
+{% block title %}Services - Clayville SDA Church{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="section-heading">
+        <h2>Service Times & Programs</h2>
+        <p>Join us for worship, prayer, and fellowship throughout the sabbath</p>
+    </div>
+    
+    <div class="cards-grid">
+        <div class="card">
+            <div class="card-content">
+                <h3 class="card-title">Morning Manna & Prayer Band</h3>
+                <p class="card-meta">Saturdays • 8:30 – 9:00 AM</p>
+                <p class="card-description">
+                    This is the spiritual start of the Sabbath. Members gather for short devotional 
+                    reading, prayers, and personal reflection. It helps everyone focus on God and prepares 
+                    hearts for the day’s worship.
+                </p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-content">
+                <h3 class="card-title">Song Service</h3>
+                <p class="card-meta">Saturdays • 9:00 – 9:30 AM</p>
+                <p class="card-description">
+                    Congregational singing and worship. 
+                    Lifts spirits, unites members in praise, and encourages active participation in worship. 
+                </p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-content">
+                <h3 class="card-title">Sabbath School</h3>
+                <p class="card-meta">Saturdays • 9:30 – 10:45 PM</p>
+                <p class="card-description">
+                    This combines the study of the weekly Sabbath School Lesson and discussion. Members reflect on scripture, 
+                    ask questions, and share insights.
+                </p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-content">
+                <h3 class="card-title">Divine Service</h3>
+                <p class="card-meta">Saturdays • 11:00 – 12:30 PM</p>
+                <p class="card-description">
+                    The main worship service of the Sabbath. Includes opening prayers, scripture readings, sermons, 
+                    special presentations, and tithes and offerings. This is the core teaching and worship session.
+                </p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-content">
+                <h3 class="card-title">Lunch - Fellowship</h3>
+                <p class="card-meta">Saturdays • 12:30 – 14:30 PM</p>
+                <p class="card-description">
+                    Time to rest, enjoy meals together, and engage in fellowship. There is always 
+                    free and DELICIOUS lunch served.
+                </p>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-content">
+                <h3 class="card-title">Afternoon Service</h3>
+                <p class="card-meta">Saturdays • 14:30 – 16:30 PM</p>
+                <p class="card-description">
+                    Extended worship, Bible teachings, or special programs. Can include evangelistic meetings, workshops, 
+                    or ministry updates. Provides spiritual refreshment and a conclusion to the Sabbath activities.
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div style="background: var(--maroon); color: white; padding: 3rem; border-radius: 12px; margin-top: 4rem; text-align: center;">
+        <h3 style="font-size: 2rem; margin-bottom: 1rem;">Join Us This Sabbath</h3>
+        <p style="font-size: 1.125rem; margin-bottom: 1.5rem;">
+            Whether you're visiting for the first time or looking for a church home, we'd love to meet you!
+        </p>
+        <a href="{{ url_for('contact') }}" class="btn btn-secondary">Get Directions</a>
+    </div>
+    
+    <div style="max-width: 800px; margin: 4rem auto 0; text-align: center;">
+        <h3 style="color: var(--maroon); margin-bottom: 1.5rem; font-size: 1.75rem;">What to Expect</h3>
+        <div style="display: grid; gap: 1.5rem; text-align: left;">
+            <div>
+                <h4 style="color: var(--black); margin-bottom: 0.5rem;">Dress Code</h4>
+                <p style="color: var(--gray); line-height: 1.6;">
+                    Come as you are! We welcome casual to formal attire. The most important thing is your presence.
+                </p>
+            </div>
+            <div>
+                <h4 style="color: var(--black); margin-bottom: 0.5rem;">Parking & Accessibility</h4>
+                <p style="color: var(--gray); line-height: 1.6;">
+                    Free parking available on-site. Our building is wheelchair accessible with handicap parking near the entrance.
+                </p>
+            </div>
+            <div>
+                <h4 style="color: var(--black); margin-bottom: 0.5rem;">Children's Care</h4>
+                <p style="color: var(--gray); line-height: 1.6;">
+                    Children's programs available during services.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
