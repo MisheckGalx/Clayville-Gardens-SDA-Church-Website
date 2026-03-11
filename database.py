@@ -5,13 +5,14 @@ def init_db():
     conn = sqlite3.connect('clayville.db')
     c = conn.cursor()
     
-    # Create events table
+    # Create events table WITH PDF SUPPORT
     c.execute('''CREATE TABLE IF NOT EXISTS events
                  (id INTEGER PRIMARY KEY AUTOINCREMENT,
                   title TEXT NOT NULL,
                   date TEXT NOT NULL,
                   description TEXT,
                   image_url TEXT,
+                  pdf_url TEXT,
                   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP)''')
     
     # Create sermons table
@@ -39,20 +40,28 @@ def init_db():
                  ('admin', password_hash))
         print("✓ Admin user created (username: admin, password: Clayville007)")
     
+    # Check if pdf_url column exists, if not add it
+    c.execute("PRAGMA table_info(events)")
+    columns = [column[1] for column in c.fetchall()]
+    if 'pdf_url' not in columns:
+        c.execute('ALTER TABLE events ADD COLUMN pdf_url TEXT')
+        print("✓ Added pdf_url column to events table")
+    
     # Insert sample events if table is empty
     c.execute("SELECT COUNT(*) FROM events")
     if c.fetchone()[0] == 0:
         sample_events = [
             ('Youth Fellowship Night', '2024-02-15', 
              'Join us for an inspiring evening of worship, games, and fellowship with our youth community.',
-             'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800'),
+             'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800',
+             None),
             
             ('Community Food Drive', '2024-02-22', 
              'Serving our community with love. Bring non-perishable food items to support local families in need.',
-             'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800'),
-            
+             'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800',
+             None),
         ]
-        c.executemany("INSERT INTO events (title, date, description, image_url) VALUES (?, ?, ?, ?)", 
+        c.executemany("INSERT INTO events (title, date, description, image_url, pdf_url) VALUES (?, ?, ?, ?, ?)", 
                      sample_events)
         print(f"✓ Added {len(sample_events)} sample events")
     
