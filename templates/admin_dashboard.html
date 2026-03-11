@@ -1,0 +1,299 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Clayville SDA Church{% endblock %}
+
+{% block extra_css %}
+<style>
+.upload-zone {
+    border: 2px dashed #d1d5db;
+    border-radius: 10px;
+    padding: 1.25rem;
+    text-align: center;
+    background: #fafafa;
+    transition: border-color 0.3s, background 0.3s;
+    cursor: pointer;
+    position: relative;
+}
+.upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--maroon);
+    background: rgba(128,0,32,0.04);
+}
+.upload-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+.upload-zone svg { width: 32px; height: 32px; fill: var(--gray); margin-bottom: 0.5rem; }
+.upload-zone p { color: var(--gray); font-size: 0.875rem; margin: 0; }
+.upload-zone strong { color: var(--maroon); }
+.file-preview {
+    margin-top: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--maroon);
+    font-weight: 600;
+    display: none;
+}
+.upload-or {
+    text-align: center;
+    color: var(--gray);
+    font-size: 0.8rem;
+    margin: 0.5rem 0;
+    position: relative;
+}
+.upload-or::before, .upload-or::after {
+    content: '';
+    display: inline-block;
+    width: 40%;
+    height: 1px;
+    background: #e5e7eb;
+    vertical-align: middle;
+    margin: 0 0.5rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+    <div class="admin-header">
+        <h1>Admin Dashboard</h1>
+        <a href="{{ url_for('admin_logout') }}" class="btn btn-secondary">Logout</a>
+    </div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ 'success' if category == 'success' else 'error' }}">{{ message }}</div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <div class="admin-grid">
+        <!-- Add New Event -->
+        <div class="admin-card">
+            <h2>Add New Event</h2>
+            <form method="POST" action="{{ url_for('add_event') }}" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Event Title *</label>
+                    <input type="text" name="title" required placeholder="e.g., Youth Fellowship Night">
+                </div>
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label>Description *</label>
+                    <textarea name="description" required placeholder="Brief description of the event..."></textarea>
+                </div>
+
+                <!-- Image Upload -->
+                <div class="form-group">
+                    <label>Event Image (optional)</label>
+                    <div class="upload-zone" id="imageZone">
+                        <input type="file" name="image_file" accept="image/*" id="imageInput" onchange="previewFile(this,'imagePreview','imageZone')">
+                        <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                        <p><strong>Click to upload</strong> or drag & drop<br>PNG, JPG, GIF, WEBP</p>
+                    </div>
+                    <div class="file-preview" id="imagePreview"></div>
+                    <div class="upload-or">or paste URL below</div>
+                    <input type="url" name="image_url" placeholder="https://example.com/image.jpg">
+                    <small style="color:var(--gray);display:block;margin-top:0.25rem;">If both are provided, the uploaded file takes priority</small>
+                </div>
+
+                <!-- PDF Upload -->
+                <div class="form-group">
+                    <label>PDF Attachment (optional)</label>
+                    <div class="upload-zone" id="pdfZone">
+                        <input type="file" name="pdf_file" accept=".pdf" id="pdfInput" onchange="previewFile(this,'pdfPreview','pdfZone')">
+                        <svg viewBox="0 0 24 24"><path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-8.5 7.5c0 .83-.67 1.5-1.5 1.5H9v2H7.5V7H10c.83 0 1.5.67 1.5 1.5v1zm5 2c0 .83-.67 1.5-1.5 1.5h-2.5V7H15c.83 0 1.5.67 1.5 1.5v3zm4-3H19v1h1.5V11H19v2h-1.5V7h3v1.5zM9 9.5h1v-1H9v1zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm10 5.5h1v-3h-1v3z"/></svg>
+                        <p><strong>Click to upload</strong> a PDF document</p>
+                    </div>
+                    <div class="file-preview" id="pdfPreview"></div>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Add Event</button>
+            </form>
+        </div>
+
+        <!-- Add New Sermon -->
+        <div class="admin-card">
+            <h2>Add New Sermon</h2>
+            <form method="POST" action="{{ url_for('add_sermon') }}">
+                <div class="form-group">
+                    <label>Sermon Title *</label>
+                    <input type="text" name="title" required placeholder="e.g., The Power of Grace">
+                </div>
+                <div class="form-group">
+                    <label>Preacher Name *</label>
+                    <input type="text" name="preacher" required placeholder="e.g., Pastor John Smith">
+                </div>
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label>YouTube Embed URL</label>
+                    <input type="url" name="youtube_url" placeholder="https://www.youtube.com/embed/VIDEO_ID">
+                    <small style="color:var(--gray);display:block;margin-top:0.25rem;">Use YouTube's embed URL format</small>
+                </div>
+                <div class="form-group">
+                    <label>Description *</label>
+                    <textarea name="description" required placeholder="Brief description of the sermon message..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Add Sermon</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Manage Events -->
+    <div class="admin-card" style="margin-top: 2rem;">
+        <h2>Manage Events</h2>
+        {% if events %}
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Date</th>
+                    <th>Media</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for event in events %}
+                <tr>
+                    <td><strong>{{ event['title'] }}</strong></td>
+                    <td>{{ event['date'] }}</td>
+                    <td>
+                        {% if event['pdf_url'] %}
+                        <span style="background:#fee2e2;color:#991b1b;padding:0.2rem 0.5rem;border-radius:4px;font-size:0.75rem;font-weight:700;">PDF</span>
+                        {% elif event['image_url'] %}
+                        <span style="background:#d1fae5;color:#065f46;padding:0.2rem 0.5rem;border-radius:4px;font-size:0.75rem;font-weight:700;">IMG</span>
+                        {% else %}
+                        <span style="color:var(--gray);font-size:0.8rem;">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST" action="{{ url_for('delete_event', event_id=event['id']) }}" style="display:inline;" onsubmit="return confirmDelete('event');">
+                            <button type="submit" class="btn btn-danger btn-small">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color:var(--gray);text-align:center;padding:2rem;">No events yet. Add your first event above!</p>
+        {% endif %}
+    </div>
+
+    <!-- Manage Sermons -->
+    <div class="admin-card" style="margin-top: 2rem;">
+        <h2>Manage Sermons</h2>
+        {% if sermons %}
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Title</th>
+                    <th>Preacher</th>
+                    <th>Date</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sermon in sermons %}
+                <tr>
+                    <td><strong>{{ sermon['title'] }}</strong></td>
+                    <td>{{ sermon['preacher'] }}</td>
+                    <td>{{ sermon['date'] }}</td>
+                    <td>
+                        <form method="POST" action="{{ url_for('delete_sermon', sermon_id=sermon['id']) }}" style="display:inline;" onsubmit="return confirmDelete('sermon');">
+                            <button type="submit" class="btn btn-danger btn-small">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <p style="color:var(--gray);text-align:center;padding:2rem;">No sermons yet. Add your first sermon above!</p>
+        {% endif %}
+    </div>
+</div>
+
+    <!-- ── Gallery Management ─────────────────────────────── -->
+    <div class="admin-card" style="margin-top: 2rem;">
+        <h2>Gallery Management
+            <span style="font-size:0.9rem;font-weight:500;color:var(--gray);margin-left:0.75rem;">
+                {{ gallery_count }} photo(s) in gallery
+            </span>
+        </h2>
+
+        <!-- Upload form -->
+        <form method="POST" action="{{ url_for('upload_gallery') }}" enctype="multipart/form-data">
+            <div class="form-group">
+                <label>Upload Photos to Gallery</label>
+                <input type="file" name="gallery_photos" multiple accept="image/*"
+                       style="padding:0.5rem;background:#fafafa;width:100%;border:2px solid #e5e7eb;border-radius:10px;">
+                <small style="color:var(--gray);display:block;margin-top:0.35rem;">
+                    Select one or multiple images — they appear in the gallery instantly.
+                </small>
+            </div>
+            <button type="submit" class="btn btn-primary">Upload to Gallery</button>
+        </form>
+
+        <!-- Current gallery photos -->
+        {% if gallery_count > 0 %}
+        <div style="margin-top:2rem;">
+            <p style="font-weight:600;color:var(--black);margin-bottom:1rem;">Current Photos:</p>
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:0.75rem;">
+                {% set image_exts = ['.jpg','.jpeg','.png','.gif','.webp'] %}
+                {% for filename in gallery_files %}
+                <div style="position:relative;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+                    <img src="/static/gallery/{{ filename }}" alt="{{ filename }}"
+                         style="width:100%;height:110px;object-fit:cover;display:block;">
+                    <form method="POST" action="{{ url_for('delete_gallery', filename=filename) }}"
+                          onsubmit="return confirm('Delete this photo from the gallery?');"
+                          style="position:absolute;top:0.4rem;right:0.4rem;">
+                        <button type="submit"
+                                style="background:rgba(220,38,38,0.85);color:white;border:none;width:26px;height:26px;border-radius:6px;cursor:pointer;font-size:0.85rem;display:flex;align-items:center;justify-content:center;">
+                            ✕
+                        </button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% else %}
+        <p style="color:var(--gray);margin-top:1.5rem;">No photos yet — upload your first one above!</p>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function confirmDelete(itemType) {
+    return confirm(`Are you sure you want to delete this ${itemType}? This action cannot be undone.`);
+}
+
+function previewFile(input, previewId, zoneId) {
+    const preview = document.getElementById(previewId);
+    const zone = document.getElementById(zoneId);
+    if (input.files && input.files[0]) {
+        preview.textContent = '✓ Selected: ' + input.files[0].name;
+        preview.style.display = 'block';
+        zone.style.borderColor = 'var(--maroon)';
+        zone.style.background = 'rgba(128,0,32,0.04)';
+    }
+}
+
+// Drag & drop visual feedback
+document.querySelectorAll('.upload-zone').forEach(zone => {
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop', () => zone.classList.remove('drag-over'));
+});
+</script>
+{% endblock %}
