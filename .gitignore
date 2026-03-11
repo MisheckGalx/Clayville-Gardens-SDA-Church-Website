@@ -1,27 +1,23 @@
-# Python
-__pycache__/
-*.pyc
-
 # Virtual environment
 venv/
+env/
 
 # Database
 *.db
+clayville.db
 
-# Environment variables
-.env
-
-# Virtual Environment
-venv/
-.env/
+# User uploads
+static/uploads/
 
 # Python cache
 __pycache__/
 *.pyc
+*.pyo
 
-# Build folders
-build/
-dist/
+# IDE
+.vscode/
+.idea/
 
-# OS files
+# OS
 .DS_Store
+Thumbs.db
