@@ -1,0 +1,48 @@
+{
+  "name": "Clayville Gardens SDA Church",
+  "short_name": "Clayville SDA",
+  "description": "Proclaiming the Gospel, Serving the Community, Preparing for Christ's Return",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#800020",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/static/logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/static/logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [],
+  "categories": ["lifestyle", "social"],
+  "shortcuts": [
+    {
+      "name": "Events",
+      "short_name": "Events",
+      "url": "/events",
+      "icons": [{ "src": "/static/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Sermons",
+      "short_name": "Sermons",
+      "url": "/sermons",
+      "icons": [{ "src": "/static/logo.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Contact",
+      "short_name": "Contact",
+      "url": "/contact",
+      "icons": [{ "src": "/static/logo.png", "sizes": "192x192" }]
+    }
+  ]
+}
