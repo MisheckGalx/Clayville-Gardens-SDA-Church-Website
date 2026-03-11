@@ -1,0 +1,312 @@
+{% extends "base.html" %}
+
+{% block title %}Events - Clayville SDA Church{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ═══════════════════════════════════════════
+   EVENTS PAGE — FULLY MOBILE-FIRST
+   ═══════════════════════════════════════════ */
+
+/* 1 col phone → 2 col tablet → 3 col desktop */
+.ev-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+@media (min-width: 580px) { .ev-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 900px) { .ev-grid { grid-template-columns: repeat(3, 1fr); } }
+
+/* ── Card shell — NEVER overflow hidden ── */
+.ev-card {
+    background: #fff;
+    border-radius: 16px;
+    overflow: visible;          /* critical: buttons must NOT be clipped */
+    box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    border: 1px solid #ebebeb;
+    display: flex;
+    flex-direction: column;
+    transition: transform 0.25s, box-shadow 0.25s;
+}
+.ev-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.13);
+}
+
+/* ── Image ── */
+.ev-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 16px 16px 0 0;
+    display: block;
+}
+
+/* ── PDF tile ── */
+.ev-pdf-tile {
+    width: 100%;
+    height: 170px;
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe0e0 100%);
+    border-radius: 16px 16px 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.65rem;
+    position: relative;
+    flex-shrink: 0;
+    text-decoration: none;      /* entire tile is tappable */
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+}
+.ev-pdf-tile:active { opacity: 0.85; }
+
+.ev-pdf-icon {
+    width: 60px; height: 60px;
+    background: #800020;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(128,0,32,0.35);
+}
+.ev-pdf-icon svg { width: 32px; height: 32px; fill: white; }
+
+.ev-pdf-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #800020;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.ev-pdf-badge {
+    position: absolute;
+    top: 0.7rem; right: 0.7rem;
+    background: #800020;
+    color: white;
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    padding: 0.22rem 0.6rem;
+    border-radius: 20px;
+}
+
+/* ── Body ── */
+.ev-body {
+    padding: 1.1rem 1.1rem 1.3rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+}
+
+.ev-date {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    background: #fff0f2;
+    color: #800020;
+    font-size: 0.78rem;
+    font-weight: 700;
+    padding: 0.28rem 0.65rem;
+    border-radius: 20px;
+    margin-bottom: 0.65rem;
+    width: fit-content;
+}
+.ev-date svg { width: 12px; height: 12px; fill: #800020; }
+
+.ev-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 0.45rem;
+    line-height: 1.4;
+}
+
+.ev-desc {
+    font-size: 0.88rem;
+    color: #6b7280;
+    line-height: 1.65;
+    flex: 1;
+    margin-bottom: 0;
+}
+
+/* ── PDF buttons ── */
+.ev-pdf-btns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;  /* always side by side */
+    gap: 0.5rem;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.ev-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    padding: 0.7rem 0.5rem;
+    border-radius: 10px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+    border: none;
+    /* Phone-friendly tap */
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    min-height: 44px;           /* Apple HIG minimum tap target */
+    transition: opacity 0.15s, transform 0.15s;
+}
+.ev-btn:active { opacity: 0.8; transform: scale(0.97); }
+.ev-btn svg { width: 15px; height: 15px; fill: currentColor; flex-shrink: 0; }
+
+.ev-btn-view {
+    background: #800020;
+    color: white !important;
+}
+.ev-btn-view:hover { background: #5a0017; text-decoration: none; color: white; }
+
+.ev-btn-dl {
+    background: #fff0f2;
+    color: #800020 !important;
+    border: 2px solid #800020;
+}
+.ev-btn-dl:hover { background: #800020; color: white !important; text-decoration: none; }
+
+/* ── Empty / stay updated ── */
+.ev-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 3.5rem 1.5rem;
+    background: #f3f4f6;
+    border-radius: 16px;
+}
+.ev-empty h3 { color: #6b7280; margin-bottom: 0.6rem; }
+.ev-empty p  { color: #9ca3af; }
+
+.stay-updated {
+    background: linear-gradient(135deg, #800020, #a6002a);
+    color: white;
+    padding: 2.5rem 1.5rem;
+    border-radius: 16px;
+    margin-top: 3rem;
+    text-align: center;
+}
+.stay-updated h3 { font-size: 1.5rem; margin-bottom: 0.65rem; color: white; }
+.stay-updated p  { margin-bottom: 1.5rem; opacity: 0.9; font-size: 0.95rem; }
+.stay-updated .btn-secondary {
+    background: white; color: #800020; border-color: white;
+}
+.stay-updated .btn-secondary:hover {
+    background: transparent; color: white;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="section-heading">
+        <h2>Upcoming Events</h2>
+        <p>Join us for worship, fellowship, and community outreach</p>
+    </div>
+
+    <div class="ev-grid">
+        {% if events %}
+            {% for event in events %}
+
+            {% set is_pdf = event['image_url'] and event['image_url'].lower().endswith('.pdf') %}
+
+            <div class="ev-card">
+
+                {# ── Media ── #}
+                {% if event['image_url'] %}
+                    {% if is_pdf %}
+                    {# Whole tile is a link — easy to tap on phone #}
+                    <a href="{{ event['image_url'] }}"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="ev-pdf-tile"
+                       aria-label="Open PDF: {{ event['title'] }}">
+                        <div class="ev-pdf-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M20 2H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0
+                                2-.9 2-2V4c0-1.1-.9-2-2-2zM8.5 11.5c0 .83-.67 1.5-1.5
+                                1.5H6V9h1c.83 0 1.5.67 1.5 1.5v1zM7 10v2h-.25V10H7zm5
+                                3h-2V9h2c.83 0 1.5.67 1.5 1.5v2c0 .83-.67 1.5-1.5
+                                1.5zm-.5-3v2h.25c.14 0 .25-.11.25-.25v-1.5c0-.14-.11-.25-.25-.25H11.5zm4.5
+                                1.25H15v.75h-1.5V9h3v.75H15v.75h1v.75zM4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6z"/>
+                            </svg>
+                        </div>
+                        <span class="ev-pdf-name">Tap to open PDF</span>
+                        <span class="ev-pdf-badge">PDF</span>
+                    </a>
+                    {% else %}
+                    <img src="{{ event['image_url'] }}"
+                         alt="{{ event['title'] }}"
+                         class="ev-img"
+                         loading="lazy">
+                    {% endif %}
+                {% endif %}
+
+                {# ── Body ── #}
+                <div class="ev-body">
+                    <div class="ev-date">
+                        <svg viewBox="0 0 24 24">
+                            <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11
+                            0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0
+                            2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7
+                            10h5v5H7z"/>
+                        </svg>
+                        {{ event['date'] }}
+                    </div>
+
+                    <p class="ev-title">{{ event['title'] }}</p>
+                    <p class="ev-desc">{{ event['description'] }}</p>
+
+                    {# ── PDF buttons — 2-column grid, big tap targets ── #}
+                    {% if is_pdf %}
+                    <div class="ev-pdf-btns">
+                        <a href="{{ event['image_url'] }}"
+                           target="_blank"
+                           rel="noopener noreferrer"
+                           class="ev-btn ev-btn-view">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73
+                                4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12
+                                17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5
+                                5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3
+                                3 3 3-1.34 3-3-1.34-3-3-3z"/>
+                            </svg>
+                            View PDF
+                        </a>
+                        <a href="{{ event['image_url'] }}"
+                           download
+                           class="ev-btn ev-btn-dl">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M19 9h-4V3H9v6H5l7 7
+                                7-7zM5 18v2h14v-2H5z"/>
+                            </svg>
+                            Download
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+
+            </div>
+            {% endfor %}
+
+        {% else %}
+            <div class="ev-empty">
+                <h3>No Upcoming Events</h3>
+                <p>Check back soon for new events and programs!</p>
+            </div>
+        {% endif %}
+    </div>
+
+    <div class="stay-updated">
+        <h3>Stay Updated</h3>
+        <p>Don&#39;t miss out on upcoming events. Contact us to join our mailing list!</p>
+        <a href="{{ url_for('contact') }}" class="btn btn-secondary">Contact Us</a>
+    </div>
+</div>
+{% endblock %}
