@@ -1,0 +1,236 @@
+{% extends "base.html" %}
+
+{% block title %}Sermons - Clayville SDA Church{% endblock %}
+
+{% block extra_css %}
+<style>
+.sermons-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 2rem;
+}
+
+.sermon-card {
+    background: var(--white);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    border: 1px solid #eee;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.sermon-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.13);
+}
+
+/* YouTube embed wrapper — 16:9 */
+.sermon-video {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%;
+    background: #000;
+    border-radius: 16px 16px 0 0;
+    overflow: hidden;
+}
+
+.sermon-video iframe {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+}
+
+/* Placeholder when no video */
+.sermon-no-video {
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, var(--maroon), #a6002a);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    border-radius: 16px 16px 0 0;
+}
+
+.sermon-no-video svg {
+    width: 48px;
+    height: 48px;
+    fill: rgba(255,255,255,0.7);
+}
+
+.sermon-no-video span {
+    color: rgba(255,255,255,0.7);
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.sermon-body {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.sermon-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.sermon-meta-tag {
+    background: #fff0f2;
+    color: var(--maroon);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 0.25rem 0.65rem;
+    border-radius: 20px;
+}
+
+.sermon-body h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--black);
+    margin-bottom: 0.6rem;
+    line-height: 1.4;
+}
+
+.sermon-body p {
+    color: var(--gray);
+    font-size: 0.93rem;
+    line-height: 1.6;
+    flex: 1;
+}
+
+.sermon-watch-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1.1rem;
+    background: var(--maroon);
+    color: white;
+    text-decoration: none;
+    padding: 0.55rem 1.1rem;
+    border-radius: 8px;
+    font-size: 0.88rem;
+    font-weight: 600;
+    transition: background 0.2s;
+    align-self: flex-start;
+}
+
+.sermon-watch-btn:hover {
+    background: var(--maroon-dark);
+    color: white;
+}
+
+.sermon-watch-btn svg {
+    width: 16px;
+    height: 16px;
+    fill: white;
+}
+
+.no-sermons {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: var(--gray-light);
+    border-radius: 16px;
+}
+
+.cta-banner {
+    background: linear-gradient(135deg, var(--maroon), #a6002a);
+    color: white;
+    padding: 3rem;
+    border-radius: 16px;
+    margin-top: 4rem;
+    text-align: center;
+}
+
+.cta-banner h3 { font-size: 1.9rem; margin-bottom: 0.75rem; }
+.cta-banner p  { font-size: 1.1rem; margin-bottom: 1.5rem; opacity: 0.9; }
+.cta-banner .btn-secondary {
+    background: white;
+    color: var(--maroon);
+    border-color: white;
+}
+.cta-banner .btn-secondary:hover {
+    background: transparent;
+    color: white;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="section-heading">
+        <h2>Sermons &amp; Messages</h2>
+        <p>Watch and listen to inspiring messages from our pastors</p>
+    </div>
+
+    {% if sermons %}
+    <div class="sermons-grid">
+        {% for sermon in sermons %}
+        <div class="sermon-card">
+
+            {% if sermon['youtube_url'] %}
+            <!-- 16:9 responsive YouTube embed -->
+            <div class="sermon-video">
+                <iframe
+                    src="{{ sermon['youtube_url'] }}"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    loading="lazy">
+                </iframe>
+            </div>
+            {% else %}
+            <!-- No video placeholder -->
+            <div class="sermon-no-video">
+                <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18A9 9 0 0 0 12 3zm-2 13.5v-9l6 4.5-6 4.5z"/></svg>
+                <span>Video coming soon</span>
+            </div>
+            {% endif %}
+
+            <div class="sermon-body">
+                <div class="sermon-meta">
+                    <span class="sermon-meta-tag">{{ sermon['preacher'] }}</span>
+                    <span class="sermon-meta-tag">{{ sermon['date'] }}</span>
+                </div>
+                <h3>{{ sermon['title'] }}</h3>
+                <p>{{ sermon['description'] }}</p>
+
+                {% if sermon['youtube_url'] %}
+                {# Build a plain watch URL so users can open in YouTube app #}
+                {% set watch_url = sermon['youtube_url'] | replace('youtube.com/embed/', 'youtube.com/watch?v=') %}
+                <a href="{{ watch_url }}" target="_blank" rel="noopener noreferrer" class="sermon-watch-btn">
+                    <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.488 3.45.029 5.804 0 12c.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0C23.512 20.55 23.971 18.196 24 12c-.029-6.185-.484-8.549-4.385-8.816zM9 16V8l8 4-8 4z"/></svg>
+                    Watch on YouTube
+                </a>
+                {% endif %}
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+
+    {% else %}
+    <div class="no-sermons">
+        <h3 style="color: var(--gray); margin-bottom: 0.75rem;">No Sermons Available</h3>
+        <p style="color: var(--gray);">Check back soon for new messages!</p>
+    </div>
+    {% endif %}
+
+    <div class="cta-banner">
+        <h3>Can't Make It to Church?</h3>
+        <p>Watch our live stream every Sabbath morning at 11:00 AM</p>
+        <a href="https://www.youtube.com/@ClayvilleSDA" target="_blank" rel="noopener noreferrer" class="btn btn-secondary">
+            Watch Live Stream
+        </a>
+    </div>
+</div>
+{% endblock %}
