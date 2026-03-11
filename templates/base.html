@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Clayville Gardens SDA Church - Proclaiming the Gospel, Serving the Community, Preparing for Christ's Return">
+    <meta name="theme-color" content="#800020">
+
+    <!-- PWA: iOS support -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Clayville SDA">
+
+    <title>{% block title %}Clayville Gardens SDA Church{% endblock %}</title>
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" href="/static/logo.png">
+    <link rel="apple-touch-icon" href="/static/logo.png">
+
+    <!-- PWA Manifest — served from root so scope works correctly -->
+    <link rel="manifest" href="/manifest.json">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+
+    <style>
+    /* ── Offline bar ──────────────────────────────────────── */
+    #offline-bar {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        background: #b91c1c;
+        color: #fff;
+        text-align: center;
+        padding: 0.55rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+        z-index: 10000;
+        animation: slideDown 0.3s ease;
+    }
+    #offline-bar.show { display: block; }
+    @keyframes slideDown {
+        from { transform: translateY(-100%); }
+        to   { transform: translateY(0); }
+    }
+
+    /* ── Install banner ───────────────────────────────────── */
+    #install-banner {
+        display: none;
+        position: fixed;
+        bottom: 1.25rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 2rem);
+        max-width: 460px;
+        background: #1f2937;
+        color: #fff;
+        border-radius: 18px;
+        padding: 1rem 1.2rem;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+        z-index: 9999;
+        align-items: center;
+        gap: 0.9rem;
+        animation: popUp 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    #install-banner.show { display: flex; }
+
+    @keyframes popUp {
+        from { opacity: 0; transform: translateX(-50%) translateY(24px) scale(0.96); }
+        to   { opacity: 1; transform: translateX(-50%) translateY(0)     scale(1); }
+    }
+
+    .ib-icon {
+        width: 50px; height: 50px;
+        border-radius: 12px;
+        flex-shrink: 0;
+        object-fit: cover;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .ib-text { flex: 1; min-width: 0; }
+    .ib-text strong { display: block; font-size: 0.95rem; margin-bottom: 0.1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .ib-text span   { font-size: 0.78rem; color: rgba(255,255,255,0.6); }
+
+    .ib-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+
+    .ib-btn-install {
+        background: #800020;
+        color: #fff;
+        border: none;
+        padding: 0.55rem 1.1rem;
+        border-radius: 9px;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s;
+        white-space: nowrap;
+    }
+    .ib-btn-install:hover { background: #a6002a; }
+
+    .ib-btn-close {
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+        border: none;
+        width: 34px; height: 34px;
+        border-radius: 8px;
+        font-size: 1.1rem;
+        cursor: pointer;
+        display: flex; align-items: center; justify-content: center;
+        transition: background 0.2s;
+    }
+    .ib-btn-close:hover { background: rgba(255,255,255,0.2); }
+
+    /* iOS manual hint (shown only on iPhone/iPad) */
+    #ios-hint {
+        display: none;
+        position: fixed;
+        bottom: 1.25rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 2rem);
+        max-width: 360px;
+        background: #1f2937;
+        color: #fff;
+        border-radius: 16px;
+        padding: 1rem 1.2rem;
+        font-size: 0.88rem;
+        text-align: center;
+        line-height: 1.6;
+        box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+        z-index: 9999;
+        animation: popUp 0.4s cubic-bezier(0.34,1.56,0.64,1);
+    }
+    #ios-hint.show { display: block; }
+    #ios-hint strong { display: block; margin-bottom: 0.4rem; font-size: 0.95rem; }
+    #ios-hint .ios-close {
+        margin-top: 0.75rem;
+        background: rgba(255,255,255,0.12);
+        border: none;
+        color: #fff;
+        padding: 0.4rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        font-size: 0.85rem;
+    }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+    <!-- Offline bar (shows when device loses connection) -->
+    <div id="offline-bar">
+        ⚡ You're offline — showing saved content from your device
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="/" class="logo">
+                <img src="/static/logo.png" alt="Clayville SDA" style="height:50px;border-radius:8px;">
+                <span class="logo-text">Clayville Gardens SDA</span>
+            </a>
+            <ul class="nav-links">
+                <li><a href="{{ url_for('home') }}">Home</a></li>
+                <li><a href="{{ url_for('about') }}">About</a></li>
+                <li><a href="{{ url_for('services') }}">Services</a></li>
+                <li><a href="{{ url_for('events') }}">Events</a></li>
+                <li><a href="{{ url_for('sermons') }}">Sermons</a></li>
+                <li><a href="{{ url_for('gallery') }}">Gallery</a></li>
+                <li><a href="{{ url_for('contact') }}">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div style="max-width:1200px;margin:1rem auto;padding:0 2rem;">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block content %}{% endblock %}
+
+    <footer>
+        <p><strong>Clayville Gardens SDA Church</strong></p>
+        <p>2 Reginald Street, Olifantsfontein, 1666</p>
+        <p>Phone: +27 81 722 4005 | Email: clayvillesda@gmail.com</p>
+        <p style="margin-top:1.5rem;">
+            &copy; {{ current_year or 2026 }} Clayville Gardens SDA Church | All rights reserved.
+        </p>
+        <p style="margin-top:1rem;">
+            <a href="{{ url_for('admin_login') }}">Admin Login</a>
+        </p>
+    </footer>
+
+    <!-- Android/Desktop install banner -->
+    <div id="install-banner">
+        <img src="/static/logo.png" alt="App icon" class="ib-icon">
+        <div class="ib-text">
+            <strong>Install Clayville SDA App</strong>
+            <span>Works offline · Free · No app store</span>
+        </div>
+        <div class="ib-actions">
+            <button class="ib-btn-install" id="ib-accept">Install</button>
+            <button class="ib-btn-close"   id="ib-close">✕</button>
+        </div>
+    </div>
+
+    <!-- iOS hint (Safari doesn't support beforeinstallprompt) -->
+    <div id="ios-hint">
+        <strong>Install Clayville SDA App</strong>
+        Tap <strong>Share ↑</strong> then <strong>"Add to Home Screen"</strong>
+        to install this app on your iPhone.
+        <br>
+        <button class="ios-close" id="ios-close">Got it</button>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+
+    <script>
+    // ── 1. Register Service Worker ────────────────────────────
+    // Must be at root /sw.js so its scope covers the whole site
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('/sw.js')
+                .then(r => console.log('[SW] Registered, scope:', r.scope))
+                .catch(e => console.warn('[SW] Failed:', e));
+        });
+    }
+
+    // ── 2. Offline / online indicator ────────────────────────
+    const offlineBar = document.getElementById('offline-bar');
+    function syncOnline() {
+        navigator.onLine
+            ? offlineBar.classList.remove('show')
+            : offlineBar.classList.add('show');
+    }
+    window.addEventListener('online',  syncOnline);
+    window.addEventListener('offline', syncOnline);
+    syncOnline();
+
+    // ── 3. Install prompt (Android / Chrome desktop) ─────────
+    let deferred = null;
+    const banner  = document.getElementById('install-banner');
+    const ibOk    = document.getElementById('ib-accept');
+    const ibClose = document.getElementById('ib-close');
+
+    window.addEventListener('beforeinstallprompt', e => {
+        e.preventDefault();
+        deferred = e;
+        if (!localStorage.getItem('pwa-installed') &&
+            !sessionStorage.getItem('pwa-dismissed')) {
+            setTimeout(() => banner.classList.add('show'), 3000);
+        }
+    });
+
+    ibOk.addEventListener('click', async () => {
+        banner.classList.remove('show');
+        if (deferred) {
+            deferred.prompt();
+            const { outcome } = await deferred.userChoice;
+            if (outcome === 'accepted') localStorage.setItem('pwa-installed', '1');
+            deferred = null;
+        }
+    });
+
+    ibClose.addEventListener('click', () => {
+        banner.classList.remove('show');
+        sessionStorage.setItem('pwa-dismissed', '1');
+    });
+
+    window.addEventListener('appinstalled', () => {
+        banner.classList.remove('show');
+        localStorage.setItem('pwa-installed', '1');
+    });
+
+    // ── 4. iOS install hint (Safari doesn't fire beforeinstallprompt) ──
+    const isIOS        = /iphone|ipad|ipod/i.test(navigator.userAgent);
+    const isInStandalone = window.navigator.standalone === true;
+    const iosHint      = document.getElementById('ios-hint');
+    const iosClose     = document.getElementById('ios-close');
+
+    if (isIOS && !isInStandalone && !sessionStorage.getItem('ios-hint-shown')) {
+        setTimeout(() => iosHint.classList.add('show'), 3000);
+    }
+
+    iosClose.addEventListener('click', () => {
+        iosHint.classList.remove('show');
+        sessionStorage.setItem('ios-hint-shown', '1');
+    });
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

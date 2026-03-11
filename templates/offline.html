@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}You're Offline - Clayville Gardens SDA Church{% endblock %}
+{% block content %}
+<div class="container" style="text-align: center; padding: 6rem 2rem;">
+  <div style="max-width: 480px; margin: 0 auto;">
+    <div style="width: 100px; height: 100px; background: #fff0f2; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 2rem;">
+      <svg width="52" height="52" viewBox="0 0 24 24" fill="none" stroke="#800020" stroke-width="1.5">
+        <path d="M1 1l22 22M16.72 11.06A10.94 10.94 0 0 1 19 12.55M5 12.55a10.94 10.94 0 0 1 5.17-2.39M10.71 5.05A16 16 0 0 1 22.56 9M1.42 9a15.91 15.91 0 0 1 4.7-2.88M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01"/>
+      </svg>
+    </div>
+    <h2 style="color: var(--maroon); font-size: 2rem; margin-bottom: 1rem;">You're Offline</h2>
+    <p style="color: var(--gray); font-size: 1.1rem; line-height: 1.7; margin-bottom: 2rem;">
+      It looks like you've lost your internet connection. Don't worry — pages you've already visited are still available below.
+    </p>
+    <a href="/" class="btn btn-primary" style="margin-bottom: 1rem; display: inline-block;">
+      Go to Home Page
+    </a>
+    <p style="color: var(--gray); font-size: 0.9rem; margin-top: 1.5rem;">
+      Previously visited pages like <strong>Events</strong>, <strong>Sermons</strong>, <strong>About</strong>, and <strong>Contact</strong> will still load from your device.
+    </p>
+  </div>
+</div>
+{% endblock %}
