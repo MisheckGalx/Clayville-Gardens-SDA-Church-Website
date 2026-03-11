@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Clayville Gardens SDA Church - Proclaiming the Gospel, Serving the Community, Preparing for Christ's Return">
+    <meta name="theme-color" content="#800020">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Clayville SDA">
+    <meta name="application-name" content="Clayville SDA">
+    <meta name="msapplication-TileColor" content="#800020">
+    <meta name="msapplication-TileImage" content="/static/icons/icon-144x144.png">
+
+    <title>{% block title %}Clayville Gardens SDA Church{% endblock %}</title>
+
+    <!-- Icons -->
+    <link rel="icon" type="image/png" href="/static/favicon.png">
+    <link rel="apple-touch-icon" href="/static/icons/apple-touch-icon.png">
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/static/manifest.json">
+
+    <!-- Stylesheet -->
+    <link rel="stylesheet" href="/static/css/style.css">
+
+    <style>
+    /* ── Offline bar ──────────────────────────────── */
+    #offline-bar {
+        display: none;
+        position: fixed;
+        top: 0; left: 0; right: 0;
+        background: #b91c1c;
+        color: #fff;
+        text-align: center;
+        padding: 0.5rem 1rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        z-index: 10000;
+    }
+    #offline-bar.show { display: block; }
+    body.is-offline { padding-top: 34px; }
+
+    /* ── Install banner ───────────────────────────── */
+    #install-banner {
+        display: none;
+        position: fixed;
+        bottom: 1.25rem;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 2.5rem);
+        max-width: 460px;
+        background: #1f2937;
+        color: #fff;
+        border-radius: 18px;
+        padding: 1rem 1.25rem;
+        box-shadow: 0 12px 40px rgba(0,0,0,0.4);
+        z-index: 9999;
+        flex-direction: row;
+        align-items: center;
+        gap: 0.9rem;
+        animation: bannerUp 0.45s cubic-bezier(0.34,1.56,0.64,1) both;
+    }
+    #install-banner.show { display: flex; }
+
+    @keyframes bannerUp {
+        from { opacity:0; transform: translateX(-50%) translateY(40px); }
+        to   { opacity:1; transform: translateX(-50%) translateY(0);    }
+    }
+    .ib-icon {
+        width: 48px; height: 48px;
+        border-radius: 12px; object-fit: cover;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    }
+    .ib-text { flex: 1; min-width: 0; }
+    .ib-text strong { display: block; font-size: 0.95rem; margin-bottom: 0.15rem; }
+    .ib-text span   { font-size: 0.78rem; color: rgba(255,255,255,0.6); }
+    .ib-actions { display: flex; gap: 0.5rem; flex-shrink: 0; }
+    .ib-btn-install {
+        background: #800020; color: #fff;
+        border: none; padding: 0.55rem 1.1rem;
+        border-radius: 9px; font-size: 0.88rem;
+        font-weight: 700; cursor: pointer;
+        white-space: nowrap;
+        transition: background 0.2s;
+    }
+    .ib-btn-install:hover { background: #a6002a; }
+    .ib-btn-close {
+        background: rgba(255,255,255,0.1); color: #fff;
+        border: none; width: 34px; height: 34px;
+        border-radius: 8px; font-size: 1rem;
+        cursor: pointer; display: flex;
+        align-items: center; justify-content: center;
+        transition: background 0.2s; flex-shrink: 0;
+    }
+    .ib-btn-close:hover { background: rgba(255,255,255,0.22); }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+<!-- Offline bar -->
+<div id="offline-bar">&#9889; You&#39;re offline &mdash; showing saved content</div>
+
+<!-- Navigation -->
+<nav>
+    <div class="nav-container">
+        <a href="/" class="logo">
+            <img src="/static/logo.png" alt="Clayville SDA" style="height:50px;border-radius:8px;">
+            <span class="logo-text">Clayville Gardens SDA</span>
+        </a>
+        <ul class="nav-links">
+            <li><a href="{{ url_for('home') }}">Home</a></li>
+            <li><a href="{{ url_for('about') }}">About</a></li>
+            <li><a href="{{ url_for('services') }}">Services</a></li>
+            <li><a href="{{ url_for('events') }}">Events</a></li>
+            <li><a href="{{ url_for('sermons') }}">Sermons</a></li>
+            <li><a href="{{ url_for('gallery') }}">Gallery</a></li>
+            <li><a href="{{ url_for('contact') }}">Contact</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div style="max-width:1200px;margin:1rem auto;padding:0 2rem;">
+        {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+    </div>
+    {% endif %}
+{% endwith %}
+
+<!-- Page content -->
+{% block content %}{% endblock %}
+
+<!-- Footer -->
+<footer>
+    <p><strong>Clayville Gardens SDA Church</strong></p>
+    <p>2 Reginald Street, Olifantsfontein, 1666</p>
+    <p>Phone: +27 81 722 4005</p>
+    <p>Email: clayvillesda<!-- no-spam -->@gmail.com</p>
+    <p style="margin-top:1.5rem;">
+        &copy; {{ current_year or 2026 }} Clayville Gardens SDA Church | All rights reserved.
+    </p>
+    <p style="margin-top:1rem;">
+        <a href="{{ url_for('admin_login') }}">Admin Login</a>
+    </p>
+</footer>
+
+<!-- Install banner (PWA) -->
+<div id="install-banner" role="dialog" aria-label="Install app">
+    <img src="/static/logo.png" alt="App icon" class="ib-icon">
+    <div class="ib-text">
+        <strong>Install Clayville SDA</strong>
+        <span>Works offline &middot; No app store needed</span>
+    </div>
+    <div class="ib-actions">
+        <button class="ib-btn-install" id="ib-accept">Install</button>
+        <button class="ib-btn-close"   id="ib-dismiss" aria-label="Dismiss">&#x2715;</button>
+    </div>
+</div>
+
+<!-- Main JS -->
+<script src="/static/js/main.js"></script>
+
+<script>
+// Nav shadow on scroll
+var nav = document.querySelector('nav');
+window.addEventListener('scroll', function() {
+    nav.classList.toggle('scrolled', window.scrollY > 20);
+}, { passive: true });
+
+// Scroll reveal — add class="reveal" to any element to animate it in
+var revealEls = document.querySelectorAll('.reveal');
+if ('IntersectionObserver' in window) {
+    var ro = new IntersectionObserver(function(entries) {
+        entries.forEach(function(e) {
+            if (e.isIntersecting) {
+                e.target.classList.add('visible');
+                ro.unobserve(e.target);
+            }
+        });
+    }, { threshold: 0.1 });
+    revealEls.forEach(function(el) { ro.observe(el); });
+} else {
+    revealEls.forEach(function(el) { el.classList.add('visible'); });
+}
+</script>
+
+<script>
+// ── Service Worker ───────────────────────────────────────
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('/sw.js', { scope: '/' })
+            .then(function(reg) { console.log('[SW] Registered:', reg.scope); })
+            .catch(function(err) { console.warn('[SW] Failed:', err); });
+    });
+}
+
+// ── Offline indicator ────────────────────────────────────
+var offlineBar = document.getElementById('offline-bar');
+function syncStatus() {
+    if (navigator.onLine) {
+        offlineBar.classList.remove('show');
+        document.body.classList.remove('is-offline');
+    } else {
+        offlineBar.classList.add('show');
+        document.body.classList.add('is-offline');
+    }
+}
+window.addEventListener('online',  syncStatus);
+window.addEventListener('offline', syncStatus);
+syncStatus();
+
+// ── PWA install banner ───────────────────────────────────
+var installPrompt = null;
+var banner    = document.getElementById('install-banner');
+var btnAccept = document.getElementById('ib-accept');
+var btnClose  = document.getElementById('ib-dismiss');
+
+window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    installPrompt = e;
+    if (!localStorage.getItem('pwa-dismissed')) {
+        setTimeout(function() { banner.classList.add('show'); }, 3000);
+    }
+});
+
+btnAccept.addEventListener('click', function() {
+    banner.classList.remove('show');
+    if (installPrompt) {
+        installPrompt.prompt();
+        installPrompt.userChoice.then(function(r) {
+            console.log('[PWA] outcome:', r.outcome);
+            installPrompt = null;
+        });
+    }
+});
+
+btnClose.addEventListener('click', function() {
+    banner.classList.remove('show');
+    localStorage.setItem('pwa-dismissed', '1');
+});
+
+window.addEventListener('appinstalled', function() {
+    banner.classList.remove('show');
+    installPrompt = null;
+});
+</script>
+
+{% block extra_js %}{% endblock %}
+</body>
+</html>

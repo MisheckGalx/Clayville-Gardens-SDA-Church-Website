@@ -1,0 +1,247 @@
+{% extends "base.html" %}
+{% block title %}Home - Clayville Gardens SDA Church{% endblock %}
+
+{% block extra_css %}
+<style>
+.home-ev-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+@media (min-width: 600px)  { .home-ev-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 900px)  { .home-ev-grid { grid-template-columns: repeat(3,1fr); } }
+
+.hev-card {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    display: flex;
+    flex-direction: column;
+    overflow: visible !important;
+}
+
+.hev-img {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+    border-radius: 14px 14px 0 0;
+    display: block;
+}
+
+.hev-pdf-top {
+    background: linear-gradient(135deg,#fff0f0,#ffd6d6);
+    border-radius: 14px 14px 0 0;
+    padding: 1.75rem 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    text-decoration: none;
+}
+.hev-pdf-top svg { width: 44px; height: 44px; fill: #800020; }
+.hev-pdf-top span {
+    font-size: 0.75rem; font-weight: 700;
+    color: #800020; text-transform: uppercase; letter-spacing: 0.08em;
+}
+
+.hev-body { padding: 1.1rem; display: flex; flex-direction: column; flex: 1; }
+.hev-date { font-size: 0.78rem; font-weight: 700; color: #800020; margin-bottom: 0.35rem; }
+.hev-title { font-size: 1rem; font-weight: 700; color: #1f2937; margin-bottom: 0.4rem; line-height: 1.4; }
+.hev-desc  { font-size: 0.87rem; color: #6b7280; line-height: 1.6; flex: 1; }
+
+.hev-pdf-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.hev-pdf-buttons a {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    width: 100%;
+    padding: 0.85rem 1rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    text-decoration: none !important;
+    min-height: 48px;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    box-sizing: border-box;
+}
+.hev-pdf-buttons a svg { width: 17px; height: 17px; fill: currentColor; flex-shrink: 0; }
+
+.hev-btn-view { background: #800020 !important; color: #fff !important; border: none; }
+.hev-btn-dl   { background: #fff !important; color: #800020 !important; border: 2px solid #800020 !important; }
+
+/* Sermon cards */
+.home-sermon-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+@media (min-width: 600px) { .home-sermon-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 900px) { .home-sermon-grid { grid-template-columns: repeat(3,1fr); } }
+
+.hsc {
+    background: #fff;
+    border-radius: 14px;
+    border: 1px solid #e5e7eb;
+    padding: 1.25rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+}
+.hsc-title { font-size: 1rem; font-weight: 700; color: #1f2937; margin-bottom: 0.35rem; }
+.hsc-meta  { font-size: 0.8rem; font-weight: 600; color: #800020; margin-bottom: 0.5rem; }
+.hsc-desc  { font-size: 0.87rem; color: #6b7280; line-height: 1.6; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<div class="hero-slider">
+    <div class="slide active" style="background-image:url('/static/hero1.jpg');">
+        <div class="slide-overlay">
+            <h1>Clayville Gardens Seventh Day Adventist Church</h1>
+            <p>Proclaiming the Gospel. Serving the Community. Preparing for Christ&#39;s Return.</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('services') }}" class="btn btn-primary">Plan Your Visit</a>
+                <a href="{{ url_for('sermons') }}"  class="btn btn-secondary">Watch Sermons</a>
+            </div>
+        </div>
+    </div>
+    <div class="slide" style="background-image:url('/static/hero2.jpg');">
+        <div class="slide-overlay">
+            <h1>Join Our Community</h1>
+            <p>A welcoming church family committed to worship, fellowship, and service.</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('about') }}"  class="btn btn-primary">Learn More</a>
+                <a href="{{ url_for('events') }}" class="btn btn-secondary">View Events</a>
+            </div>
+        </div>
+    </div>
+    <div class="slide" style="background-image:url('/static/hero3.jpg');">
+        <div class="slide-overlay">
+            <h1>Growing in Faith Together</h1>
+            <p>Bible study, prayer meetings, and discipleship programs for all ages.</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('services') }}" class="btn btn-primary">Service Times</a>
+                <a href="{{ url_for('contact') }}"  class="btn btn-secondary">Get Connected</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Events -->
+<div class="container" style="padding-top:3rem;">
+    <div class="section-heading reveal">
+        <h2>Upcoming Events</h2>
+        <p>Join us for worship, fellowship, and community service</p>
+    </div>
+
+    {% if events %}
+    <div class="home-ev-grid">
+        {% for event in events %}
+
+        {% if event['image_url'] %}
+            {% set is_pdf = '.pdf' in event['image_url'].lower() %}
+        {% else %}
+            {% set is_pdf = false %}
+        {% endif %}
+
+        <div class="hev-card">
+
+            {% if event['image_url'] %}
+                {% if is_pdf %}
+                <a href="{{ event['image_url'] }}" target="_blank" rel="noopener noreferrer" class="hev-pdf-top">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M14 2H6C4.9 2 4 2.9 4 4v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13zM9.5 15.5v-5h1.75c.69 0 1.25.56 1.25 1.25v2.5c0 .69-.56 1.25-1.25 1.25H9.5zm1-4.25v3.5h.75v-3.5H10.5zm2.5 4.25v-5h2v.75h-1.25v1.25H15v.75h-1.25v2.25H13z"/>
+                    </svg>
+                    <span>Tap to open PDF</span>
+                </a>
+                {% else %}
+                <img src="{{ event['image_url'] }}" alt="{{ event['title'] }}" class="hev-img" loading="lazy">
+                {% endif %}
+            {% endif %}
+
+            <div class="hev-body">
+                <div class="hev-date">{{ event['date'] }}</div>
+                <div class="hev-title">{{ event['title'] }}</div>
+                <div class="hev-desc">{{ event['description'] }}</div>
+
+                {% if is_pdf %}
+                <div class="hev-pdf-buttons">
+                    <a href="{{ event['image_url'] }}" target="_blank" rel="noopener noreferrer" class="hev-btn-view">
+                        <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                        View PDF
+                    </a>
+                    <a href="{{ event['image_url'] }}" download class="hev-btn-dl">
+                        <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                        Download PDF
+                    </a>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div style="text-align:center;padding:2.5rem;background:#f3f4f6;border-radius:14px;">
+        <p style="color:#6b7280;">No upcoming events right now — check back soon!</p>
+    </div>
+    {% endif %}
+
+    <div style="text-align:center;margin-top:1.75rem;">
+        <a href="{{ url_for('events') }}" class="btn btn-primary">View All Events</a>
+    </div>
+</div>
+
+<!-- Sermons -->
+<div style="background:#f3f4f6;padding:3rem 0;margin-top:3rem;">
+    <div class="container">
+        <div class="section-heading reveal">
+            <h2>Recent Sermons</h2>
+            <p>Messages of hope, faith, and inspiration</p>
+        </div>
+
+        {% if sermons %}
+        <div class="home-sermon-grid">
+            {% for sermon in sermons %}
+            <div class="hsc">
+                <div class="hsc-title">{{ sermon['title'] }}</div>
+                <div class="hsc-meta">{{ sermon['preacher'] }} &bull; {{ sermon['date'] }}</div>
+                <div class="hsc-desc">{{ sermon['description'] }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:2.5rem;background:#fff;border-radius:14px;">
+            <p style="color:#6b7280;">No sermons yet — check back soon!</p>
+        </div>
+        {% endif %}
+
+        <div style="text-align:center;margin-top:1.75rem;">
+            <a href="{{ url_for('sermons') }}" class="btn btn-primary">View All Sermons</a>
+        </div>
+    </div>
+</div>
+
+<!-- Mission -->
+<div class="container" style="padding:3rem 2rem;">
+    <div style="max-width:760px;margin:0 auto;text-align:center;">
+        <h2 style="color:#800020;margin-bottom:1rem;font-size:1.75rem;">Our Mission</h2>
+        <p style="font-size:1rem;line-height:1.85;color:#6b7280;">
+            Clayville Gardens SDA Church exists to glorify God by proclaiming the everlasting gospel,
+            nurturing believers in their faith journey, and serving our community with Christ&#39;s love.
+            We are committed to preparing hearts for the soon return of Jesus Christ.
+        </p>
+    </div>
+</div>
+
+{% endblock %}
