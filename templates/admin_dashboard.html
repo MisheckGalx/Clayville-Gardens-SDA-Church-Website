@@ -1,0 +1,566 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Clayville SDA Church{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ── Reset admin container for mobile ─────────────────── */
+.admin-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 1.25rem 1rem 4rem;
+}
+
+/* ── Header ───────────────────────────────────────────── */
+.admin-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.admin-header h1 {
+    font-size: 1.5rem;
+    color: var(--maroon);
+    margin: 0;
+}
+
+/* ── Tab navigation ───────────────────────────────────── */
+.admin-tabs {
+    display: flex;
+    gap: 0;
+    background: var(--gray-light);
+    border-radius: 12px;
+    padding: 0.3rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+}
+.admin-tabs::-webkit-scrollbar { display: none; }
+
+.admin-tab {
+    flex: 1;
+    min-width: max-content;
+    padding: 0.6rem 1rem;
+    border: none;
+    background: transparent;
+    border-radius: 9px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--gray);
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    text-align: center;
+}
+
+.admin-tab.active {
+    background: white;
+    color: var(--maroon);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* ── Tab panels ───────────────────────────────────────── */
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* ── Cards ────────────────────────────────────────────── */
+.admin-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.25rem;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+    border: 1px solid #f0f0f0;
+    margin-bottom: 1.25rem;
+}
+
+.admin-card h2 {
+    font-size: 1.1rem;
+    color: var(--maroon);
+    margin-bottom: 1.25rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--gray-light);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.admin-card h2 .count-badge {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--gray);
+    background: var(--gray-light);
+    padding: 0.2rem 0.6rem;
+    border-radius: 20px;
+    margin-left: auto;
+}
+
+/* ── Forms ────────────────────────────────────────────── */
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--black);
+    margin-bottom: 0.4rem;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem 0.9rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-family: inherit;
+    color: var(--black);
+    background: #fafafa;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    -webkit-appearance: none;
+    appearance: none;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: var(--maroon);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(128,0,32,0.08);
+}
+
+.form-group textarea { min-height: 100px; resize: vertical; }
+
+.form-group small { color: var(--gray); font-size: 0.78rem; display: block; margin-top: 0.3rem; }
+
+.btn { touch-action: manipulation; }
+
+.btn-full { width: 100%; padding: 0.85rem; font-size: 0.95rem; border-radius: 10px; }
+
+/* ── Upload zone ──────────────────────────────────────── */
+.upload-zone {
+    border: 2px dashed #d1d5db;
+    border-radius: 10px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    background: #fafafa;
+    cursor: pointer;
+    position: relative;
+    transition: border-color 0.2s, background 0.2s;
+}
+.upload-zone:hover, .upload-zone.drag-over {
+    border-color: var(--maroon);
+    background: rgba(128,0,32,0.03);
+}
+.upload-zone input[type="file"] {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+}
+.upload-zone svg { width: 28px; height: 28px; fill: var(--gray); margin-bottom: 0.4rem; }
+.upload-zone p { color: var(--gray); font-size: 0.82rem; margin: 0; line-height: 1.5; }
+.upload-zone strong { color: var(--maroon); }
+
+.upload-or {
+    text-align: center;
+    color: var(--gray);
+    font-size: 0.78rem;
+    margin: 0.6rem 0;
+}
+
+.file-selected {
+    display: none;
+    margin-top: 0.4rem;
+    font-size: 0.82rem;
+    color: var(--maroon);
+    font-weight: 600;
+    padding: 0.35rem 0.6rem;
+    background: rgba(128,0,32,0.06);
+    border-radius: 6px;
+}
+
+/* ── Mobile-friendly item list (replaces tables) ──────── */
+.item-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+.item-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    background: #fafafa;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    padding: 0.85rem 1rem;
+}
+
+.item-row-info { flex: 1; min-width: 0; }
+
+.item-row-info strong {
+    display: block;
+    font-size: 0.9rem;
+    color: var(--black);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item-row-info span {
+    font-size: 0.78rem;
+    color: var(--gray);
+    display: block;
+    margin-top: 0.15rem;
+}
+
+.item-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    flex-shrink: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+.badge-pdf { background: #fee2e2; color: #991b1b; }
+.badge-img { background: #d1fae5; color: #065f46; }
+
+.btn-delete {
+    background: #fee2e2;
+    color: #991b1b;
+    border: none;
+    padding: 0.5rem 0.75rem;
+    border-radius: 8px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background 0.2s;
+    touch-action: manipulation;
+}
+.btn-delete:hover { background: #fecaca; }
+
+.empty-state {
+    text-align: center;
+    padding: 2rem 1rem;
+    color: var(--gray);
+    font-size: 0.9rem;
+}
+
+/* ── Gallery grid ─────────────────────────────────────── */
+.gallery-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    gap: 0.6rem;
+    margin-top: 1.25rem;
+}
+
+.gallery-thumb {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    aspect-ratio: 1;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.gallery-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.gallery-thumb-delete {
+    position: absolute;
+    top: 0.3rem;
+    right: 0.3rem;
+    background: rgba(220,38,38,0.88);
+    color: white;
+    border: none;
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+    touch-action: manipulation;
+}
+.gallery-thumb-delete:hover { background: #dc2626; }
+
+/* ── Responsive ───────────────────────────────────────── */
+@media (min-width: 640px) {
+    .admin-container { padding: 2rem 1.5rem 4rem; }
+    .admin-card { padding: 1.75rem; }
+    .admin-header h1 { font-size: 1.75rem; }
+    .gallery-admin-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+}
+
+@media (max-width: 360px) {
+    .admin-tab { padding: 0.55rem 0.7rem; font-size: 0.78rem; }
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="admin-container">
+
+    <!-- Header -->
+    <div class="admin-header">
+        <h1>⚙️ Dashboard</h1>
+        <a href="{{ url_for('admin_logout') }}" class="btn btn-secondary btn-small">Logout</a>
+    </div>
+
+    <!-- Flash messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+        <div class="alert alert-{{ 'success' if category == 'success' else 'error' }}" style="margin-bottom:1rem;">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+
+    <!-- Tab bar -->
+    <div class="admin-tabs" role="tablist">
+        <button class="admin-tab active" onclick="switchTab('events')"   id="tab-events">📅 Events</button>
+        <button class="admin-tab"        onclick="switchTab('sermons')"  id="tab-sermons">🎙 Sermons</button>
+        <button class="admin-tab"        onclick="switchTab('gallery')"  id="tab-gallery">🖼 Gallery</button>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         TAB: EVENTS
+    ══════════════════════════════════════════════════ -->
+    <div class="tab-panel active" id="panel-events">
+
+        <!-- Add event form -->
+        <div class="admin-card">
+            <h2>Add New Event</h2>
+            <form method="POST" action="{{ url_for('add_event') }}" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label>Event Title *</label>
+                    <input type="text" name="title" required placeholder="e.g., Youth Fellowship Night">
+                </div>
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label>Description *</label>
+                    <textarea name="description" required placeholder="Brief description..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Upload Image or PDF (optional)</label>
+                    <div class="upload-zone" id="eventFileZone">
+                        <input type="file" name="event_file" accept="image/*,.pdf" id="eventFileInput"
+                               onchange="showSelected(this,'eventSelected','eventFileZone')">
+                        <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11z"/></svg>
+                        <p><strong>Tap to choose</strong> an image or PDF</p>
+                    </div>
+                    <div class="file-selected" id="eventSelected"></div>
+                    <div class="upload-or">— or paste a URL —</div>
+                    <input type="url" name="image_url" placeholder="https://example.com/image.jpg">
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Add Event</button>
+            </form>
+        </div>
+
+        <!-- Events list -->
+        <div class="admin-card">
+            <h2>
+                Manage Events
+                <span class="count-badge">{{ events|length }}</span>
+            </h2>
+            {% if events %}
+            <div class="item-list">
+                {% for event in events %}
+                <div class="item-row">
+                    <div class="item-row-info">
+                        <strong>{{ event['title'] }}</strong>
+                        <span>{{ event['date'] }}</span>
+                    </div>
+                    {% if event['image_url'] %}
+                        {% if event['image_url'].lower().endswith('.pdf') %}
+                        <span class="item-badge badge-pdf">PDF</span>
+                        {% else %}
+                        <span class="item-badge badge-img">IMG</span>
+                        {% endif %}
+                    {% endif %}
+                    <form method="POST" action="{{ url_for('delete_event', event_id=event['id']) }}"
+                          onsubmit="return confirm('Delete this event?');">
+                        <button type="submit" class="btn-delete">Delete</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">No events yet — add one above!</div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         TAB: SERMONS
+    ══════════════════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-sermons">
+
+        <!-- Add sermon form -->
+        <div class="admin-card">
+            <h2>Add New Sermon</h2>
+            <form method="POST" action="{{ url_for('add_sermon') }}">
+                <div class="form-group">
+                    <label>Sermon Title *</label>
+                    <input type="text" name="title" required placeholder="e.g., The Power of Grace">
+                </div>
+                <div class="form-group">
+                    <label>Preacher *</label>
+                    <input type="text" name="preacher" required placeholder="e.g., Pastor John Smith">
+                </div>
+                <div class="form-group">
+                    <label>Date *</label>
+                    <input type="date" name="date" required>
+                </div>
+                <div class="form-group">
+                    <label>YouTube URL</label>
+                    <input type="url" name="youtube_url" placeholder="https://www.youtube.com/watch?v=...">
+                    <small>Paste any YouTube link — it's converted automatically</small>
+                </div>
+                <div class="form-group">
+                    <label>Description *</label>
+                    <textarea name="description" required placeholder="Brief description..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Add Sermon</button>
+            </form>
+        </div>
+
+        <!-- Sermons list -->
+        <div class="admin-card">
+            <h2>
+                Manage Sermons
+                <span class="count-badge">{{ sermons|length }}</span>
+            </h2>
+            {% if sermons %}
+            <div class="item-list">
+                {% for sermon in sermons %}
+                <div class="item-row">
+                    <div class="item-row-info">
+                        <strong>{{ sermon['title'] }}</strong>
+                        <span>{{ sermon['preacher'] }} &middot; {{ sermon['date'] }}</span>
+                    </div>
+                    <form method="POST" action="{{ url_for('delete_sermon', sermon_id=sermon['id']) }}"
+                          onsubmit="return confirm('Delete this sermon?');">
+                        <button type="submit" class="btn-delete">Delete</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">No sermons yet — add one above!</div>
+            {% endif %}
+        </div>
+
+    </div>
+
+    <!-- ══════════════════════════════════════════════════
+         TAB: GALLERY
+    ══════════════════════════════════════════════════ -->
+    <div class="tab-panel" id="panel-gallery">
+
+        <!-- Upload form -->
+        <div class="admin-card">
+            <h2>Upload Photos</h2>
+            <form method="POST" action="{{ url_for('upload_gallery') }}" enctype="multipart/form-data">
+                <div class="form-group">
+                    <div class="upload-zone" id="galleryZone">
+                        <input type="file" name="gallery_photos" multiple accept="image/*" id="galleryInput"
+                               onchange="showSelected(this,'gallerySelected','galleryZone')">
+                        <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+                        <p><strong>Tap to select photos</strong><br>You can pick multiple at once</p>
+                    </div>
+                    <div class="file-selected" id="gallerySelected"></div>
+                </div>
+                <button type="submit" class="btn btn-primary btn-full">Upload to Gallery</button>
+            </form>
+        </div>
+
+        <!-- Current photos -->
+        <div class="admin-card">
+            <h2>
+                Current Photos
+                <span class="count-badge">{{ gallery_count }}</span>
+            </h2>
+            {% if gallery_count > 0 %}
+            <div class="gallery-admin-grid">
+                {% for filename in gallery_files %}
+                <div class="gallery-thumb">
+                    <img src="/static/gallery/{{ filename }}" alt="{{ filename }}" loading="lazy">
+                    <form method="POST" action="{{ url_for('delete_gallery', filename=filename) }}"
+                          onsubmit="return confirm('Delete this photo?');">
+                        <button type="submit" class="gallery-thumb-delete" title="Delete">✕</button>
+                    </form>
+                </div>
+                {% endfor %}
+            </div>
+            {% else %}
+            <div class="empty-state">No photos yet — upload some above!</div>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// ── Tab switching ────────────────────────────────────────
+function switchTab(name) {
+    // Hide all panels
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    // Show selected
+    document.getElementById('panel-' + name).classList.add('active');
+    document.getElementById('tab-' + name).classList.add('active');
+    // Remember choice
+    sessionStorage.setItem('adminTab', name);
+}
+
+// Restore last active tab on reload
+(function() {
+    const saved = sessionStorage.getItem('adminTab');
+    if (saved) switchTab(saved);
+})();
+
+// ── File selected feedback ───────────────────────────────
+function showSelected(input, previewId, zoneId) {
+    const el   = document.getElementById(previewId);
+    const zone = document.getElementById(zoneId);
+    if (input.files && input.files.length) {
+        const names = Array.from(input.files).map(f => f.name).join(', ');
+        el.textContent = '✓ ' + (input.files.length > 1 ? input.files.length + ' files selected' : names);
+        el.style.display = 'block';
+        zone.style.borderColor = 'var(--maroon)';
+    }
+}
+
+// ── Drag & drop visual ───────────────────────────────────
+document.querySelectorAll('.upload-zone').forEach(zone => {
+    zone.addEventListener('dragover', e => { e.preventDefault(); zone.classList.add('drag-over'); });
+    zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+    zone.addEventListener('drop',     () => zone.classList.remove('drag-over'));
+});
+</script>
+{% endblock %}
