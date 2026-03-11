@@ -51,21 +51,6 @@ def init_db():
              'Serving our community with love. Bring non-perishable food items to support local families in need.',
              'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800'),
             
-            ('Midweek Prayer Meeting', '2024-02-28', 
-             'Come together for prayer, worship, and Bible study. All are welcome to join us.',
-             'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800'),
-            
-            ('Women\'s Ministry Brunch', '2024-03-05', 
-             'Ladies, join us for a special morning of fellowship, inspiration, and delicious food.',
-             'https://images.unsplash.com/photo-1517457373958-b7bdd4587205?w=800'),
-            
-            ('Family Fun Day', '2024-03-12', 
-             'Bring the whole family for games, activities, food, and fun for all ages!',
-             'https://images.unsplash.com/photo-1511895426328-dc8714191300?w=800'),
-            
-            ('Health & Wellness Seminar', '2024-03-19', 
-             'Learn practical tips for healthy living from medical professionals in our community.',
-             'https://images.unsplash.com/photo-1505751172876-fa1923c5c528?w=800')
         ]
         c.executemany("INSERT INTO events (title, date, description, image_url) VALUES (?, ?, ?, ?)", 
                      sample_events)
@@ -75,29 +60,10 @@ def init_db():
     c.execute("SELECT COUNT(*) FROM sermons")
     if c.fetchone()[0] == 0:
         sample_sermons = [
-            ('The Power of Grace', 'Pastor John Smith', '2024-02-10',
-             'https://www.youtube.com/embed/dQw4w9WgXcQ',
+            ('In Crisis, Keep God First', 'Pastor Randy Skeete',
+             'https:/https://www.youtube.com/watch?v=O55TNDg4AU4/',
              'Understanding God\'s amazing grace and how it transforms our lives daily.'),
             
-            ('Walking by Faith', 'Elder Mary Johnson', '2024-02-03',
-             'https://www.youtube.com/embed/dQw4w9WgXcQ',
-             'Living a life of faith and complete trust in God\'s promises.'),
-            
-            ('Hope for Tomorrow', 'Pastor David Lee', '2024-01-27',
-             'https://www.youtube.com/embed/dQw4w9WgXcQ',
-             'Finding hope and assurance in Christ\'s soon return.'),
-            
-            ('Love in Action', 'Pastor John Smith', '2024-01-20',
-             'https://www.youtube.com/embed/dQw4w9WgXcQ',
-             'Practical ways to show Christ\'s love in our daily interactions.'),
-            
-            ('The Sabbath Rest', 'Elder Sarah Williams', '2024-01-13',
-             'https://www.youtube.com/embed/dQw4w9WgXcQ',
-             'Discovering the blessing and peace of God\'s holy Sabbath day.'),
-            
-            ('Prayer That Moves Mountains', 'Pastor David Lee', '2024-01-06',
-             'https://www.youtube.com/embed/dQw4w9WgXcQ',
-             'Unlocking the power of effectual, fervent prayer in our lives.')
         ]
         c.executemany("INSERT INTO sermons (title, preacher, date, youtube_url, description) VALUES (?, ?, ?, ?, ?)", 
                      sample_sermons)
