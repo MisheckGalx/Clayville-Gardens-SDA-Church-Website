@@ -51,15 +51,7 @@ def init_db():
     c.execute("SELECT COUNT(*) FROM events")
     if c.fetchone()[0] == 0:
         sample_events = [
-            ('Youth Fellowship Night', '2024-02-15', 
-             'Join us for an inspiring evening of worship, games, and fellowship with our youth community.',
-             'https://images.unsplash.com/photo-1511632765486-a01980e01a18?w=800',
-             None),
             
-            ('Community Food Drive', '2024-02-22', 
-             'Serving our community with love. Bring non-perishable food items to support local families in need.',
-             'https://images.unsplash.com/photo-1559027615-cd4628902d4a?w=800',
-             None),
         ]
         c.executemany("INSERT INTO events (title, date, description, image_url, pdf_url) VALUES (?, ?, ?, ?, ?)", 
                      sample_events)
