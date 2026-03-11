@@ -49,11 +49,11 @@ class Event:
         return events
     
     @staticmethod
-    def create(title, date, description, image_url):
-        """Create new event"""
+    def create(title, date, description, image_url, pdf_url=None):
+        """Create new event with optional PDF"""
         db = get_db()
-        db.execute('INSERT INTO events (title, date, description, image_url) VALUES (?, ?, ?, ?)',
-                  (title, date, description, image_url))
+        db.execute('INSERT INTO events (title, date, description, image_url, pdf_url) VALUES (?, ?, ?, ?, ?)',
+                  (title, date, description, image_url, pdf_url))
         db.commit()
         db.close()
     
