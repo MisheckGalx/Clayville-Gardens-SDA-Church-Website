@@ -76,7 +76,8 @@ def get_this_weeks_lesson():
         # 1. Get all lessons for the quarter
         r = http_requests.get(f'{base}/quarterlies/{quarter}/lessons/index.json', timeout=6)
         r.raise_for_status()
-        lessons = r.json().get('lessons', [])
+        data = r.json()
+        lessons = data if isinstance(data, list) else data.get('lessons', [])
         if not lessons:
             return None
 
