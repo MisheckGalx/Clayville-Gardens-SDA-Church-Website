@@ -113,9 +113,9 @@ def get_this_weeks_lesson():
         # Extract just the lesson number portion (last segment)
         lesson_num = lesson_id.split('-')[-1] if lesson_id else ''
         if lesson_num:
-            current['adventech_url'] = f'https://sabbath.school/en/ss/{quarter}/{quarter}-{lesson_num}'
+            current['adventech_url'] = 'https://www.sabbath.school/Lesson'
         else:
-            current['adventech_url'] = f'https://sabbath.school/en/ss/{quarter}'
+            current['adventech_url'] = 'https://www.sabbath.school/Lesson'
 
         # 5. Build day pills (Sun → Sat)
         day_names = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sab']
