@@ -1,0 +1,538 @@
+{% extends "base.html" %}
+{% block title %}Home - Clayville Gardens SDA Church{% endblock %}
+
+{% block extra_css %}
+<style>
+/* ═══════════════════════════════════════════════════════
+   SABBATH SCHOOL LESSON BANNER
+   ═══════════════════════════════════════════════════════ */
+.ssl-wrap {
+    background: linear-gradient(135deg, #5a0000 0%, #8B0000 45%, #6b0010 100%);
+    position: relative;
+    overflow: hidden;
+    padding: 0;
+    margin-top: 0;
+    border-top: 5px solid #d4af37;
+}
+
+/* Decorative background cross pattern */
+.ssl-wrap::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+        radial-gradient(circle at 80% 50%, rgba(212,175,55,0.12) 0%, transparent 55%),
+        radial-gradient(circle at 10% 80%, rgba(255,255,255,0.04) 0%, transparent 40%);
+    pointer-events: none;
+}
+
+/* Floating book decoration */
+.ssl-wrap::after {
+    content: '✝';
+    position: absolute;
+    right: 3%;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: clamp(80px, 15vw, 160px);
+    color: rgba(255,255,255,0.04);
+    pointer-events: none;
+    line-height: 1;
+}
+
+.ssl-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 3rem 2.5rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* Top row: badge + quarter title */
+.ssl-top {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+    flex-wrap: wrap;
+}
+.ssl-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: rgba(212,175,55,0.2);
+    border: 1px solid rgba(212,175,55,0.5);
+    color: #f5d882;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+}
+.ssl-badge svg { width: 12px; height: 12px; fill: #f5d882; }
+
+.ssl-quarter {
+    color: rgba(255,255,255,0.5);
+    font-size: 0.82rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+}
+
+/* Main content area */
+.ssl-main {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    align-items: start;
+}
+@media (min-width: 720px) {
+    .ssl-main { grid-template-columns: 1fr auto; gap: 2.5rem; align-items: center; }
+}
+
+/* Left: title + memory verse */
+.ssl-lesson-num {
+    font-size: 0.78rem;
+    font-weight: 800;
+    color: #f5d882;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+}
+.ssl-title {
+    font-size: clamp(1.6rem, 4vw, 2.4rem);
+    font-weight: 900;
+    color: #ffffff;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+    text-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+.ssl-verse {
+    background: rgba(255,255,255,0.08);
+    border-left: 3px solid #d4af37;
+    padding: 0.85rem 1.1rem;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 1.25rem;
+    max-width: 560px;
+}
+.ssl-verse-label {
+    font-size: 0.68rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: #d4af37;
+    margin-bottom: 0.3rem;
+}
+.ssl-verse p {
+    color: rgba(255,255,255,0.85);
+    font-size: 0.9rem;
+    line-height: 1.65;
+    font-style: italic;
+}
+
+/* Day pills strip */
+.ssl-days {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-bottom: 1.5rem;
+}
+.ssl-day {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: rgba(255,255,255,0.75);
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 0.3rem 0.65rem;
+    border-radius: 20px;
+    letter-spacing: 0.04em;
+    transition: background 0.2s, border-color 0.2s, color 0.2s;
+    cursor: default;
+}
+.ssl-day.today {
+    background: #d4af37;
+    border-color: #d4af37;
+    color: #3a2000;
+}
+
+/* CTA button */
+.ssl-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #d4af37;
+    color: #3a2000 !important;
+    text-decoration: none !important;
+    padding: 0.8rem 1.6rem;
+    border-radius: 10px;
+    font-size: 0.88rem;
+    font-weight: 800;
+    letter-spacing: 0.03em;
+    transition: background 0.2s, transform 0.2s;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+.ssl-btn:hover { background: #e8c96a; transform: translateY(-2px); }
+.ssl-btn svg { width: 16px; height: 16px; fill: #3a2000; }
+
+/* Right: cover image */
+.ssl-cover {
+    width: 150px;
+    flex-shrink: 0;
+    display: none;
+}
+@media (min-width: 720px) { .ssl-cover { display: block; } }
+
+.ssl-cover img {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+    aspect-ratio: 3/4;
+    object-fit: cover;
+}
+.ssl-cover-placeholder {
+    width: 100%;
+    aspect-ratio: 3/4;
+    background: rgba(255,255,255,0.08);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid rgba(255,255,255,0.12);
+}
+.ssl-cover-placeholder svg { width: 40px; height: 40px; fill: rgba(255,255,255,0.3); }
+.ssl-cover-placeholder span { font-size: 0.7rem; color: rgba(255,255,255,0.35); text-align: center; }
+
+/* ═══════════════════════════════════════════════════════
+   HOME GRID
+   ═══════════════════════════════════════════════════════ */
+.home-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+}
+@media (min-width: 600px) { .home-grid { grid-template-columns: 1fr 1fr; } }
+@media (min-width: 960px) { .home-grid { grid-template-columns: repeat(3,1fr); } }
+
+.home-section     { padding: 4rem 0 1rem; }
+.home-section-alt { background: linear-gradient(180deg,#f9f7f4,#f0eeea); padding: 4rem 0 1rem; margin-top:1rem; }
+.view-all-row     { text-align:center; margin-top:2rem; padding-bottom:3rem; }
+
+/* ── Event cards ─────────────────────────────────────── */
+.ec {
+    background:#fff;
+    border-radius:18px;
+    border:1px solid #e8e4df;
+    box-shadow:0 2px 16px rgba(0,0,0,0.07);
+    display:flex; flex-direction:column;
+    overflow:visible;
+    transition:transform 0.3s ease, box-shadow 0.3s ease;
+}
+.ec:hover { transform:translateY(-5px); box-shadow:0 12px 36px rgba(0,0,0,0.13); }
+
+.ec-img-wrap { border-radius:18px 18px 0 0; overflow:hidden; flex-shrink:0; }
+.ec-img { width:100%; height:200px; object-fit:cover; display:block; transition:transform 0.5s ease; }
+.ec:hover .ec-img { transform:scale(1.04); }
+
+.ec-pdf-tile {
+    width:100%; height:155px;
+    background:linear-gradient(135deg,#fff5f5,#ffd6d6);
+    border-radius:18px 18px 0 0;
+    display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:0.6rem;
+    text-decoration:none; cursor:pointer;
+    -webkit-tap-highlight-color:transparent; flex-shrink:0;
+}
+.ec-pdf-tile:active { opacity:0.82; }
+.ec-pdf-icon { width:52px;height:52px;background:#8B0000;border-radius:12px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(139,0,0,0.3); }
+.ec-pdf-icon svg { width:27px;height:27px;fill:white; }
+.ec-pdf-label { font-size:0.7rem;font-weight:800;color:#8B0000;text-transform:uppercase;letter-spacing:0.08em; }
+
+.ec-body { padding:1.2rem 1.2rem 1.4rem; display:flex; flex-direction:column; flex:1; }
+.ec-date { display:inline-flex;align-items:center;gap:0.3rem;background:#fff0f0;color:#8B0000;font-size:0.74rem;font-weight:800;padding:0.26rem 0.65rem;border-radius:20px;margin-bottom:0.6rem;width:fit-content; }
+.ec-date svg { width:11px;height:11px;fill:#8B0000; }
+.ec-title { font-size:1rem;font-weight:800;color:#1a1a1a;margin-bottom:0.4rem;line-height:1.35; }
+.ec-desc  { font-size:0.86rem;color:#6b7280;line-height:1.65;flex:1; }
+
+.ec-btns { display:grid;grid-template-columns:1fr 1fr;gap:0.5rem;margin-top:1rem; }
+.ec-btn { display:flex;align-items:center;justify-content:center;gap:0.35rem;padding:0.7rem 0.5rem;border-radius:10px;font-size:0.82rem;font-weight:800;text-decoration:none !important;min-height:46px;cursor:pointer;border:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent; }
+.ec-btn svg { width:14px;height:14px;fill:currentColor;flex-shrink:0; }
+.ec-btn-view { background:#8B0000;color:#fff !important; }
+.ec-btn-view:hover { background:#5a0000;color:#fff; }
+.ec-btn-dl   { background:#fff0f0;color:#8B0000 !important;border:2px solid #8B0000; }
+.ec-btn-dl:hover { background:#8B0000;color:#fff !important; }
+
+/* ── Sermon cards ────────────────────────────────────── */
+.sc {
+    background:#fff;
+    border-radius:18px;
+    border:1px solid #e8e4df;
+    box-shadow:0 2px 16px rgba(0,0,0,0.07);
+    display:flex; flex-direction:column;
+    overflow:hidden;
+    transition:transform 0.3s ease, box-shadow 0.3s ease;
+}
+.sc:hover { transform:translateY(-5px); box-shadow:0 12px 36px rgba(0,0,0,0.13); }
+
+.sc-video { position:relative;width:100%;padding-top:56.25%;background:#000;flex-shrink:0; }
+.sc-video iframe { position:absolute;inset:0;width:100%;height:100%;border:none; }
+
+.sc-no-video { width:100%;height:150px;background:linear-gradient(135deg,#8B0000,#b01c1c);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0.6rem;flex-shrink:0; }
+.sc-no-video svg  { width:42px;height:42px;fill:rgba(255,255,255,0.5); }
+.sc-no-video span { color:rgba(255,255,255,0.6);font-size:0.82rem;font-weight:600; }
+
+.sc-body { padding:1.2rem;display:flex;flex-direction:column;flex:1; }
+.sc-tags { display:flex;flex-wrap:wrap;gap:0.4rem;margin-bottom:0.65rem; }
+.sc-tag  { background:#fff0f0;color:#8B0000;font-size:0.7rem;font-weight:800;padding:0.2rem 0.6rem;border-radius:20px;letter-spacing:0.03em; }
+.sc-title { font-size:1rem;font-weight:800;color:#1a1a1a;margin-bottom:0.4rem;line-height:1.35; }
+.sc-desc  { font-size:0.85rem;color:#6b7280;line-height:1.65;flex:1;margin-bottom:0.85rem; }
+.sc-watch { display:inline-flex;align-items:center;gap:0.4rem;background:#8B0000;color:#fff !important;text-decoration:none !important;padding:0.6rem 1.1rem;border-radius:9px;font-size:0.82rem;font-weight:800;align-self:flex-start;transition:background 0.2s;touch-action:manipulation; }
+.sc-watch:hover { background:#5a0000;color:#fff; }
+.sc-watch svg { width:15px;height:15px;fill:white; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- ── Hero ────────────────────────────────────────────── -->
+<div class="hero-slider">
+    <div class="slide active" style="background-image:url('/static/hero1.jpg');">
+        <div class="slide-overlay">
+            <h1>Clayville Gardens Seventh Day Adventist Church</h1>
+            <p>Proclaiming the Gospel. Serving the Community. Preparing for Christ&#39;s Return.</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('services') }}" class="btn btn-primary">Plan Your Visit</a>
+                <a href="{{ url_for('sermons') }}"  class="btn btn-secondary">Watch Sermons</a>
+            </div>
+        </div>
+    </div>
+    <div class="slide" style="background-image:url('/static/hero2.jpg');">
+        <div class="slide-overlay">
+            <h1>Join Our Community</h1>
+            <p>A welcoming church family committed to worship, fellowship, and service.</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('about') }}"  class="btn btn-primary">Learn More</a>
+                <a href="{{ url_for('events') }}" class="btn btn-secondary">View Events</a>
+            </div>
+        </div>
+    </div>
+    <div class="slide" style="background-image:url('/static/hero3.jpg');">
+        <div class="slide-overlay">
+            <h1>Growing in Faith Together</h1>
+            <p>Bible study, prayer meetings, and discipleship programs for all ages.</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('services') }}" class="btn btn-primary">Service Times</a>
+                <a href="{{ url_for('contact') }}"  class="btn btn-secondary">Get Connected</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     SABBATH SCHOOL LESSON BANNER
+     Auto-updates every week from the official SDA API
+══════════════════════════════════════════════════════ -->
+{% if lesson %}
+<!-- clear visual gap between hero and lesson banner -->
+<div style="height:0;background:#f0eeea;border-top:4px solid #d4af37;"></div>
+<div class="ssl-wrap">
+    <div class="ssl-inner">
+
+        <!-- Top badge row -->
+        <div class="ssl-top">
+            <span class="ssl-badge">
+                <svg viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zM21 18.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>
+                This Week&#39;s Sabbath School Lesson
+            </span>
+            {% if lesson.quarterly_title %}
+            <span class="ssl-quarter">{{ lesson.quarterly_title }}</span>
+            {% endif %}
+        </div>
+
+        <div class="ssl-main">
+
+            <!-- Left: lesson info -->
+            <div>
+                {% if lesson.order %}
+                <div class="ssl-lesson-num">Lesson {{ lesson.order }}</div>
+                {% endif %}
+
+                <div class="ssl-title">{{ lesson.title }}</div>
+
+                {% if lesson.memory_verse %}
+                <div class="ssl-verse">
+                    <div class="ssl-verse-label">Memory Text</div>
+                    <p>{{ lesson.memory_verse | striptags | truncate(180) }}</p>
+                </div>
+                {% endif %}
+
+                <!-- Day pills: highlight today -->
+                {% if lesson.day_pills %}
+                <div class="ssl-days">
+                    {% set today_num = now.weekday() if now is defined else 0 %}
+                    {# weekday(): Mon=0...Sun=6. Pills: Sun=0,Mon=1...Sat=6 #}
+                    {% for pill in lesson.day_pills %}
+                    <span class="ssl-day{% if loop.index0 == ((today_num + 1) % 7) %} today{% endif %}"
+                          title="{{ pill.title }}">
+                        {{ pill.short }}
+                    </span>
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <a href="{{ lesson.adventech_url }}" target="_blank" rel="noopener noreferrer" class="ssl-btn">
+                    <svg viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zM21 18.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>
+                    Read Full Lesson
+                </a>
+            </div>
+
+            <!-- Right: cover image -->
+            <div class="ssl-cover">
+                {% if lesson.quarterly_cover %}
+                <img src="{{ lesson.quarterly_cover }}" alt="Quarterly cover" loading="lazy">
+                {% else %}
+                <div class="ssl-cover-placeholder">
+                    <svg viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5S2.45 4.9 1 6v14.65c0 .25.25.5.5.5.1 0 .15-.05.25-.05C3.1 20.45 5.05 20 6.5 20c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V6c-.6-.45-1.25-.75-2-1zM21 18.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v11.5z"/></svg>
+                    <span>Quarterly<br>Guide</span>
+                </div>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- ── EVENTS ──────────────────────────────────────────── -->
+<div class="home-section">
+    <div class="container">
+        <div class="section-heading reveal">
+            <h2>Upcoming Events</h2>
+            <p>Join us for worship, fellowship, and community service</p>
+        </div>
+
+        {% if events %}
+        <div class="home-grid">
+            {% for event in events %}
+            {% if event['image_url'] %}
+                {% set is_pdf = '.pdf' in event['image_url'].lower() %}
+            {% else %}
+                {% set is_pdf = false %}
+            {% endif %}
+            <div class="ec reveal reveal-delay-{{ loop.index }}">
+                {% if event['image_url'] %}
+                    {% if is_pdf %}
+                    <a href="{{ event['image_url'] }}" target="_blank" rel="noopener noreferrer" class="ec-pdf-tile">
+                        <div class="ec-pdf-icon">
+                            <svg viewBox="0 0 24 24"><path d="M14 2H6C4.9 2 4 2.9 4 4v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm-1 7V3.5L18.5 9H13z"/></svg>
+                        </div>
+                        <span class="ec-pdf-label">Tap to open PDF</span>
+                    </a>
+                    {% else %}
+                    <div class="ec-img-wrap">
+                        <img src="{{ event['image_url'] }}" alt="{{ event['title'] }}" class="ec-img" loading="lazy">
+                    </div>
+                    {% endif %}
+                {% endif %}
+                <div class="ec-body">
+                    <div class="ec-date">
+                        <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5C3.9 3 3 3.9 3 5v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+                        {{ event['date'] }}
+                    </div>
+                    <div class="ec-title">{{ event['title'] }}</div>
+                    <div class="ec-desc">{{ event['description'] }}</div>
+                    {% if is_pdf %}
+                    <div class="ec-btns">
+                        <a href="{{ event['image_url'] }}" target="_blank" rel="noopener noreferrer" class="ec-btn ec-btn-view">
+                            <svg viewBox="0 0 24 24"><path d="M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+                            View PDF
+                        </a>
+                        <a href="{{ event['image_url'] }}" download class="ec-btn ec-btn-dl">
+                            <svg viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+                            Download
+                        </a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:3rem 1rem;background:#f9f7f4;border-radius:16px;">
+            <p style="color:#9ca3af;">No upcoming events — check back soon!</p>
+        </div>
+        {% endif %}
+        <div class="view-all-row">
+            <a href="{{ url_for('events') }}" class="btn btn-primary">View All Events</a>
+        </div>
+    </div>
+</div>
+
+<!-- ── SERMONS ─────────────────────────────────────────── -->
+<div class="home-section-alt">
+    <div class="container">
+        <div class="section-heading reveal">
+            <h2>Recent Sermons</h2>
+            <p>Watch inspiring messages from our pastors — right here</p>
+        </div>
+
+        {% if sermons %}
+        <div class="home-grid">
+            {% for sermon in sermons %}
+            <div class="sc reveal reveal-delay-{{ loop.index }}">
+                {% if sermon['youtube_url'] %}
+                <div class="sc-video">
+                    <iframe src="{{ sermon['youtube_url'] }}"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen loading="lazy"></iframe>
+                </div>
+                {% else %}
+                <div class="sc-no-video">
+                    <svg viewBox="0 0 24 24"><path d="M12 3a9 9 0 1 0 0 18A9 9 0 0 0 12 3zm-2 13.5v-9l6 4.5-6 4.5z"/></svg>
+                    <span>Video coming soon</span>
+                </div>
+                {% endif %}
+                <div class="sc-body">
+                    <div class="sc-tags">
+                        <span class="sc-tag">{{ sermon['preacher'] }}</span>
+                        <span class="sc-tag">{{ sermon['date'] }}</span>
+                    </div>
+                    <div class="sc-title">{{ sermon['title'] }}</div>
+                    <div class="sc-desc">{{ sermon['description'] }}</div>
+                    {% if sermon['youtube_url'] %}
+                    {% set watch_url = sermon['youtube_url'] | replace('youtube.com/embed/', 'youtube.com/watch?v=') %}
+                    <a href="{{ watch_url }}" target="_blank" rel="noopener noreferrer" class="sc-watch">
+                        <svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0C.488 3.45.029 5.804 0 12c.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0C23.512 20.55 23.971 18.196 24 12c-.029-6.185-.484-8.549-4.385-8.816zM9 16V8l8 4-8 4z"/></svg>
+                        Watch on YouTube
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <div style="text-align:center;padding:3rem 1rem;background:#fff;border-radius:16px;">
+            <p style="color:#9ca3af;">No sermons yet — check back soon!</p>
+        </div>
+        {% endif %}
+        <div class="view-all-row">
+            <a href="{{ url_for('sermons') }}" class="btn btn-primary">View All Sermons</a>
+        </div>
+    </div>
+</div>
+
+<!-- ── MISSION ─────────────────────────────────────────── -->
+<div class="container" style="padding-top:3.5rem;padding-bottom:3.5rem;">
+    <div style="max-width:720px;margin:0 auto;text-align:center;" class="reveal">
+        <h2 style="color:#8B0000;margin-bottom:0.85rem;font-size:1.9rem;font-weight:800;">Our Mission</h2>
+        <div style="width:48px;height:3px;background:linear-gradient(90deg,#8B0000,#d4af37);border-radius:2px;margin:0 auto 1.25rem;"></div>
+        <p style="font-size:1rem;line-height:1.9;color:#6b7280;">
+            Clayville Gardens SDA Church exists to glorify God by proclaiming the everlasting gospel,
+            nurturing believers in their faith journey, and serving our community with Christ&#39;s love.
+            We are committed to preparing hearts for the soon return of Jesus Christ.
+        </p>
+    </div>
+</div>
+
+{% endblock %}
